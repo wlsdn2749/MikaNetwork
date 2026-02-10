@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MikaServerCore")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+40b19d30c57499751f89f80d6dc99a083dae24a0")]
 [assembly: System.Reflection.AssemblyProductAttribute("MikaServerCore")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MikaServerCore")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
