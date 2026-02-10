@@ -1,3 +1,7 @@
 .idea
-bin
-obj
+/bin
+/obj
+*.exe
+*.pdb
+*.dll
+*.cache
