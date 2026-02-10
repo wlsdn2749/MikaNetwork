@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MikaServer", "MikaServer\MikaServer.csproj", "{A1DE793A-1BBE-42AF-964E-E818D9A52145}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MikaClient", "MikaClient\MikaClient.csproj", "{4545F00C-3AB7-44BE-8344-3CD20F4B3DE2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MikaServerCore", "MikaServerCore\MikaServerCore.csproj", "{C687F6A3-3889-4557-9F82-FF0D4D2148D5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A1DE793A-1BBE-42AF-964E-E818D9A52145}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1DE793A-1BBE-42AF-964E-E818D9A52145}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1DE793A-1BBE-42AF-964E-E818D9A52145}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1DE793A-1BBE-42AF-964E-E818D9A52145}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4545F00C-3AB7-44BE-8344-3CD20F4B3DE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4545F00C-3AB7-44BE-8344-3CD20F4B3DE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4545F00C-3AB7-44BE-8344-3CD20F4B3DE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4545F00C-3AB7-44BE-8344-3CD20F4B3DE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C687F6A3-3889-4557-9F82-FF0D4D2148D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C687F6A3-3889-4557-9F82-FF0D4D2148D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C687F6A3-3889-4557-9F82-FF0D4D2148D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C687F6A3-3889-4557-9F82-FF0D4D2148D5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

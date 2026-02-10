@@ -1,0 +1,11 @@
+C:\Users\wlsdn\workspace\MikaNetwork\MikaServerCore\bin\Debug\net9.0\MikaServerCore.deps.json
+C:\Users\wlsdn\workspace\MikaNetwork\MikaServerCore\bin\Debug\net9.0\MikaServerCore.dll
+C:\Users\wlsdn\workspace\MikaNetwork\MikaServerCore\bin\Debug\net9.0\MikaServerCore.pdb
+C:\Users\wlsdn\workspace\MikaNetwork\MikaServerCore\obj\Debug\net9.0\MikaServerCore.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\wlsdn\workspace\MikaNetwork\MikaServerCore\obj\Debug\net9.0\MikaServerCore.AssemblyInfoInputs.cache
+C:\Users\wlsdn\workspace\MikaNetwork\MikaServerCore\obj\Debug\net9.0\MikaServerCore.AssemblyInfo.cs
+C:\Users\wlsdn\workspace\MikaNetwork\MikaServerCore\obj\Debug\net9.0\MikaServerCore.csproj.CoreCompileInputs.cache
+C:\Users\wlsdn\workspace\MikaNetwork\MikaServerCore\obj\Debug\net9.0\MikaServerCore.dll
+C:\Users\wlsdn\workspace\MikaNetwork\MikaServerCore\obj\Debug\net9.0\refint\MikaServerCore.dll
+C:\Users\wlsdn\workspace\MikaNetwork\MikaServerCore\obj\Debug\net9.0\MikaServerCore.pdb
+C:\Users\wlsdn\workspace\MikaNetwork\MikaServerCore\obj\Debug\net9.0\ref\MikaServerCore.dll
