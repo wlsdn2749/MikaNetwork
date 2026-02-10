@@ -1,7 +1,14 @@
 .idea
-/bin
-/obj
+bin
+obj
+
 *.exe
 *.pdb
 *.dll
 *.cache
+MikaClient/bin
+MikaClient/obj
+MikaServer/bin
+MikaServer/obj
+MikaServerCore/bin
+MikaServerCore/obj

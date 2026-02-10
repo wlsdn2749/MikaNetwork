@@ -16,8 +16,21 @@ namespace MikaServer
             
             listener.Init(endpoint);
             Console.WriteLine("Listening...");
+
+            listener.OnAcceptHandler = (socket) =>
+            {
+                Session session = new Session();
+                session.Init(socket);
+                _ = session.StartAsync();
+            };
             
             await listener.StartAcceptAsync();
+
+
+            while (true)
+            {
+                
+            }
         }
     }
 }
