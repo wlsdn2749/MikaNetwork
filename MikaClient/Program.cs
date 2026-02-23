@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using ServerCore;
+using MikaServerCore.Network;
 
 
 namespace MikaClient
@@ -26,9 +26,8 @@ namespace MikaClient
                 string? input = Console.ReadLine();
                 if (string.IsNullOrEmpty(input)) continue;
                 if (input == "exit") break;
-
-                byte[] sendBuffer = Encoding.UTF8.GetBytes(input);
-                await session.SendAsync(sendBuffer);
+                
+                await session.SendLineAsync(input);
             }
             
             session.Disconnect();

@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using ServerCore;
+using MikaServerCore.Network;
 
 namespace MikaServer
 {
@@ -19,18 +19,18 @@ namespace MikaServer
 
             listener.OnAcceptHandler = (socket) =>
             {
-                Session session = new Session();
+                var session = new Session();
                 session.Init(socket);
+
+                session.OnPackageReceived = (s, p) =>
+                {
+                    _ = s.SendLineAsync($"echo: {p.Text}");
+                };
+                
                 _ = session.StartAsync();
             };
             
             await listener.StartAcceptAsync();
-
-
-            while (true)
-            {
-                
-            }
         }
     }
 }

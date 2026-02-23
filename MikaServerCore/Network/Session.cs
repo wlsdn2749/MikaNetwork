@@ -1,13 +1,17 @@
-﻿using System.Net;
+﻿using System.IO.Pipelines;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using MikaServerCore.Pipeline;
 
-namespace ServerCore;
+namespace MikaServerCore.Network;
 
 public class Session
 {
     private Socket  _socket = null!;
-    private int     _sessionId;
+    private readonly IPipelineFilter<TextPackageInfo> _filter = new LinePipelineFilter();
+    
+    public Action<Session, TextPackageInfo>? OnPackageReceived;
     
     public void Init(Socket socket)
     {
@@ -18,10 +22,9 @@ public class Session
         try
         {
             _socket = new(ipEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            
             await _socket.ConnectAsync(ipEndPoint);
-
             _ = StartAsync();
+            
             return true;
         }
         catch (Exception ex)
@@ -37,49 +40,55 @@ public class Session
 
         try
         {
+            using var stream = new NetworkStream(_socket, ownsSocket: false);
+            var reader = PipeReader.Create(stream);
+
             while (true)
             {
-                // 1. 헤더 4바이트 먼저 읽기
-                byte[] headerBuffer = new byte[4];
-                int n1 = await _socket.ReceiveAsync(headerBuffer, SocketFlags.None);
-                if (n1 == 0) break; // 상대방이 연결 끊음
-                
-                // 2. 바디 길이 파악
-                int dataSize = BitConverter.ToInt32(headerBuffer, 0);
-                
-                // 3. 바디 사이즈만큼만 읽기
-                byte[] bodyBuffer = new byte[dataSize];
-                int totalRead = 0;
-                
-                while (totalRead < dataSize)
+                var result = await reader.ReadAsync();
+                var buffer = result.Buffer;
+
+                while (_filter.TryDecode(ref buffer, out var package))
                 {
-                    int read = await _socket.ReceiveAsync(bodyBuffer.AsMemory().Slice(totalRead), SocketFlags.None);
-                    totalRead += read;
+                    if (package is not null)
+                        OnPackage(package);
                 }
-                
-                OnReceive(bodyBuffer);
+
+                reader.AdvanceTo(buffer.Start, buffer.End);
+
+                if (result.IsCompleted)
+                    break;
             }
+
+            await reader.CompleteAsync();
         }
         catch (Exception ex)
         {
-            
+            Console.WriteLine($"Session error: {ex.Message}");
+        }
+        finally
+        {
+            OnDisconnected();
+            Disconnect();
         }
     }
 
     public async Task SendAsync(byte[] buffer)
     {
-        // Header를 붙여서 SendAsync 호출
-        var sendBuffer = new byte[buffer.Length + 4];
-
-        Span<byte> span = sendBuffer;
-        BitConverter.TryWriteBytes(span.Slice(0, 4), buffer.Length);
-        
-        buffer.AsSpan().CopyTo(span.Slice(4));
-        
-        _ = await _socket.SendAsync(sendBuffer, SocketFlags.None);
-        Console.WriteLine($"Sent {buffer.Length} bytes");
+        _ = await _socket.SendAsync(buffer, SocketFlags.None);
     }
 
+    public Task SendLineAsync(string line)
+    {
+        var bytes = Encoding.UTF8.GetBytes(line + "\r\n");
+        return SendAsync(bytes);
+    }
+
+    protected virtual void OnPackage(TextPackageInfo package)
+    {
+        Console.WriteLine($"Received: {package.Text}");
+        OnPackageReceived?.Invoke(this, package);
+    }
     public virtual void OnReceive(byte[] buffer)
     {
         string message = Encoding.UTF8.GetString(buffer);
