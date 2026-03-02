@@ -1,6 +1,6 @@
 using System.Buffers;
 
-namespace MikaServerCore.Pipeline;
+namespace MikaServerCore.Interface;
 
 public interface IPipelineFilter<TPackageInfo> where TPackageInfo : class, IPackageInfo
 {

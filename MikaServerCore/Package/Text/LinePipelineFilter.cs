@@ -1,7 +1,8 @@
 using System.Buffers;
 using System.Text;
+using MikaServerCore.Interface;
 
-namespace MikaServerCore.Pipeline;
+namespace MikaServerCore.Package.Text;
 
 public class LinePipelineFilter : IPipelineFilter<TextPackageInfo>
 {
