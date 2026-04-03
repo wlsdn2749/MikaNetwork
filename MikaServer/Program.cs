@@ -1,6 +1,5 @@
 using System.Net;
-using MikaServerCore.Network;
-using MikaServerCore.Package.Text;
+using MikaServerCore;
 
 namespace MikaServer
 {
@@ -8,18 +7,9 @@ namespace MikaServer
     {
         static async Task Main(string[] args)
         {
-            // Build server with explicit endpoint, package handler, and selectable pipeline filter.
-            // You can replace LinePipelineFilter with another TextPackageInfo filter implementation.
-            
-            var server = new Server(
-                new IPEndPoint(IPAddress.Any, 8080),
-                new EchoPackageHandler(),
-                new LinePipelineFilter());
+            var listener = new MikaListener("127.0.0.1", 7777);
+            listener.Start();
 
-            server.Init();
-
-            // Start server. It binds to the endpoint configured in constructor.
-            await server.StartAsync();
         }
     }
 }

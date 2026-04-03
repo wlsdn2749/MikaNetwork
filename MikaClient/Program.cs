@@ -3,8 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using MikaServerCore.Network;
-
+using MikaServerCore;
 
 namespace MikaClient
 {
@@ -12,25 +11,8 @@ namespace MikaClient
     {
         static async Task Main(String[] args)
         {
-            IPAddress ipAddress = IPAddress.Parse("127.0.0.1");
-            int port = 8080;
-
-            IPEndPoint ipEndPoint = new IPEndPoint(ipAddress, port);
-
-            Session session = new();
-
-            await session.ConnectAsync(ipEndPoint);
-
-            while (true)
-            {
-                string? input = Console.ReadLine();
-                if (string.IsNullOrEmpty(input)) continue;
-                if (input == "exit") break;
-                
-                await session.SendLineAsync(input);
-            }
-            
-            session.Disconnect();
+            MikaConnector connector = new MikaConnector();
+            connector.Connect("127.0.0.1", 7777);
         }
     }
 }
