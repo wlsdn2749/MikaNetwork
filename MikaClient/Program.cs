@@ -13,6 +13,13 @@ namespace MikaClient
         {
             MikaConnector connector = new MikaConnector();
             connector.Connect("127.0.0.1", 7777);
+            
+            connector.Send("Hello");
+            
+            while (true)
+            {
+                connector.Receive();
+            }
         }
     }
 }

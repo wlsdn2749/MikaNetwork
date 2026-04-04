@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 
 namespace MikaServerCore;
 
@@ -27,7 +28,17 @@ public class MikaListener
         while (true)
         {
             Socket acceptSocket = listenSocket.Accept();
-            Console.WriteLine($"{acceptSocket.AddressFamily} + {acceptSocket.SocketType} + {acceptSocket.ProtocolType}");
+            byte[] recvBuffer = new byte[1024];
+            int recvBytes = acceptSocket.Receive(recvBuffer);
+            string recvData = Encoding.UTF8.GetString(recvBuffer, 0, recvBytes);
+            
+            Console.WriteLine($"Received Data : {recvData}");
+
+            
+            // Echo
+            byte[] sendBuffer = new byte[1024];
+            sendBuffer = Encoding.UTF8.GetBytes(recvData + "\0"); 
+            acceptSocket.Send(sendBuffer);
         }
     }
     

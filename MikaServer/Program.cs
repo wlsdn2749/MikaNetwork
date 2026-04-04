@@ -9,7 +9,6 @@ namespace MikaServer
         {
             var listener = new MikaListener("127.0.0.1", 7777);
             listener.Start();
-
         }
     }
 }
