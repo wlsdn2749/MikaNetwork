@@ -1,38 +1,36 @@
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
 namespace MikaServerCore;
 
-public class MikaConnector
+public class MikaConnector : IDisposable
 {
-    private Socket connectSocket;
+    private readonly Socket _connectSocket = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-    public MikaConnector()
-    {
-        connectSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-    }
-
-    public void Connect(string ipAddress, int port)
-    {
-        connectSocket.Connect(ipAddress, port);
-        
-    }
+    public void Connect(string ipAddress, int port) => _connectSocket.Connect(ipAddress, port);
+    public void Connect(IPAddress ipAddress, int port) => _connectSocket.Connect(ipAddress, port);
 
     public void Send(string message)
     {
         // string -> byte
-        byte[] bytes = Encoding.UTF8.GetBytes(message + "\0");
+        byte[] bytes = Encoding.UTF8.GetBytes(message);
 
-        connectSocket.Send(bytes);
+        _connectSocket.Send(bytes);
     }
 
-    public void Receive()
+    public string Receive()
     {
         byte[] recvBuffer = new byte[1024];
 
-        int recvBytes = connectSocket.Receive(recvBuffer);
+        int recvBytes = _connectSocket.Receive(recvBuffer);
         var recvMessage = Encoding.UTF8.GetString(recvBuffer, 0, recvBytes);
-        
-        Console.WriteLine($"{recvMessage}");
+
+        return recvMessage;
+    }
+
+    public void Dispose()
+    {
+        _connectSocket.Dispose();
     }
 }
