@@ -8,7 +8,6 @@ public class MikaListener : IDisposable
 {
     private readonly IPEndPoint _listenSocketEP;
     private Socket _listenSocket;
-    private int _backlog = 10000;
     private bool _active;
 
     public EndPoint EndPoint => _active ? _listenSocket.LocalEndPoint! : _listenSocketEP;
@@ -24,20 +23,48 @@ public class MikaListener : IDisposable
         _listenSocket   = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
     }
     
-    public void Start()
+    public async Task Start()
     {
         _listenSocket.Bind(_listenSocketEP);
-        _listenSocket.Listen(_backlog);
+        _listenSocket.Listen((int)SocketOptionName.MaxConnections);
 
         _active = true;
+
+        while (true)
+        {
+            var acceptClient = await _listenSocket.AcceptAsync();
+
+            _ = HandleClientAsync(acceptClient);
+        }
     }
 
-    public async Task<Socket> AcceptAsync()
+
+    private async Task HandleClientAsync(Socket acceptClient)
     {
-        var acceptSocket = await _listenSocket.AcceptAsync();
-        return acceptSocket;
-    }
+        await using NetworkStream stream = new NetworkStream(acceptClient, ownsSocket: true);
 
+        byte[] buffer = new byte[4096];
+
+        try
+        {
+            while (true)
+            {
+                int bytesRead = await stream.ReadAsync(buffer);
+
+                if (bytesRead == 0)
+                {
+                    break;
+                }
+
+                ReadOnlyMemory<byte> received = buffer.AsMemory(0, bytesRead);
+            }
+
+        }
+        catch (Exception ex)
+        {
+            
+        }
+    }
     public void Dispose()
     {
         _listenSocket.Dispose();
