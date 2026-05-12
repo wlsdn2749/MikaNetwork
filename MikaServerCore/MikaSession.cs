@@ -11,6 +11,10 @@ public sealed class MikaSession
     /// _sequenceKey와 CreateSessionId()를 통해 Unique한 SessionId를 발급
     /// </summary>
     private static long _sequenceKey = 0;
+    private readonly Socket _socket;
+    private readonly Channel<byte[]> _sendQueue;
+    private readonly CancellationTokenSource _cts;
+    
     private long CreateSessionId()
     {
         long newKey = Interlocked.Increment(ref _sequenceKey);
@@ -21,11 +25,7 @@ public sealed class MikaSession
         return newKey;
     }
     
-    private readonly Socket _socket;
-    private readonly Channel<byte[]> _sendQueue;
-    private readonly CancellationTokenSource _cts;
-    
-    public EndPoint? RemoteEntPoint { get; }
+    public EndPoint? RemoteEndPoint { get; }
     public long SessionId { get; init; }
     public bool IsConnected { get; }
 
@@ -45,11 +45,11 @@ public sealed class MikaSession
         }
         catch (Exception Ex)
         {
-            await Connected();
+            
         }
     }
 
-    public async Task DisConnect()
+    public async Task Disconnect()
     {
         
     }

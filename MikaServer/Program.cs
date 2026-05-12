@@ -7,8 +7,8 @@ namespace MikaServer
     {
         static async Task Main(string[] args)
         {
-            var listener = new MikaListener("127.0.0.1", 7777);
-            listener.Start();
+            var listener = new MikaAcceptor("127.0.0.1", 7777);
+            listener.Listen();
         }
     }
 }

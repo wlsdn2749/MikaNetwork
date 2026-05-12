@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MikaServerCore;
 
-public class MikaListener : IDisposable
+public class MikaAcceptor : IDisposable
 {
     private readonly IPEndPoint _listenSocketEP;
     private Socket _listenSocket;
@@ -12,29 +12,33 @@ public class MikaListener : IDisposable
 
     public EndPoint EndPoint => _active ? _listenSocket.LocalEndPoint! : _listenSocketEP;
 
-    public MikaListener(string ipAddress, int port) 
+    public MikaAcceptor(string ipAddress, int port) 
         : this(IPAddress.Parse(ipAddress), port)
     {
         
     }
-    public MikaListener(IPAddress ipAddress, int port)
+    public MikaAcceptor(IPAddress ipAddress, int port)
     {
         _listenSocketEP = new IPEndPoint(ipAddress, port);
         _listenSocket   = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
     }
     
-    public async Task Start()
+    public void Listen()
     {
         _listenSocket.Bind(_listenSocketEP);
         _listenSocket.Listen((int)SocketOptionName.MaxConnections);
 
         _active = true;
 
+        _ = acceptLoop();
+    }
+
+    private async Task acceptLoop()
+    {
         while (true)
         {
             var acceptClient = await _listenSocket.AcceptAsync();
-
-            _ = HandleClientAsync(acceptClient);
+            _ = HandleClientAsync(acceptClient); 
         }
     }
 
