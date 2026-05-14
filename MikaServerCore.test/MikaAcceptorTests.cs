@@ -3,6 +3,8 @@ using System.Net.Sockets;
 using System.Text;
 using Shouldly;
 
+using MikaServerCore.Network;
+
 namespace MikaServerCore.test;
 
 public class MikaAcceptorTests

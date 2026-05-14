@@ -7,9 +7,13 @@ namespace MikaServerCore;
 public class MikaConnector : IDisposable
 {
     private readonly Socket _connectSocket = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+    public bool IsConnected => _connectSocket.Connected;
 
     public void Connect(string ipAddress, int port) => _connectSocket.Connect(ipAddress, port);
     public void Connect(IPAddress ipAddress, int port) => _connectSocket.Connect(ipAddress, port);
+    
+    public async Task ConnectAsync(string ipAddress, int port) => await _connectSocket.ConnectAsync(ipAddress, port);
+    public async Task ConnectAsync(IPAddress ipAddress, int port) => await _connectSocket.ConnectAsync(ipAddress, port);
 
     public void Send(string message)
     {
