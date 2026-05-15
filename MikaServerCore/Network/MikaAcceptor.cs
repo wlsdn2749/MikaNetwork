@@ -6,12 +6,12 @@ namespace MikaServerCore.Network;
 public class MikaAcceptor : IDisposable
 {
     private readonly IPEndPoint _listenSocketEp;
-    private Socket _listenSocket;
+    private readonly Socket? _listenSocket;
     private bool _active;
-    
-    public SessionManager? SessionManager { get; init; }
 
-    public EndPoint EndPoint => _active ? _listenSocket.LocalEndPoint! : _listenSocketEp;
+    public EndPoint EndPoint => _active ? _listenSocket?.LocalEndPoint! : _listenSocketEp;
+
+    public event Action<MikaSession>? Accepted;
 
     public MikaAcceptor(string ipAddress, int port) 
         : this(new MikaAcceptorOptions{LocalAddr = IPAddress.Parse(ipAddress), Port = port})
@@ -33,8 +33,8 @@ public class MikaAcceptor : IDisposable
 
     public void Listen()
     {
-        _listenSocket.Bind(_listenSocketEp);
-        _listenSocket.Listen((int)SocketOptionName.MaxConnections);
+        _listenSocket?.Bind(_listenSocketEp);
+        _listenSocket?.Listen((int)SocketOptionName.MaxConnections);
 
         _active = true;
 
@@ -45,15 +45,14 @@ public class MikaAcceptor : IDisposable
     {
         while (true)
         {
-            var session = MikaSessionFactory.Create(await _listenSocket.AcceptAsync());
-
-            if (false == SessionManager?.TryAdd(session.SessionId, session))
-            {
-                throw new Exception("Failed to add session to SessionManager");
-            }
+            var client = await _listenSocket?.AcceptAsync();
+            
+            var session = MikaSessionFactory.Create(client);
+            
+            Accepted?.Invoke(session);
         }
     }
-
+    
 
     // private async Task HandleClientAsync(Socket acceptClient)
     // {
@@ -83,6 +82,6 @@ public class MikaAcceptor : IDisposable
     // }
     public void Dispose()
     {
-        _listenSocket.Dispose();
+        _listenSocket?.Dispose();
     }
 }

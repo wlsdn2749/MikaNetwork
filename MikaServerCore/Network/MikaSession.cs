@@ -32,7 +32,7 @@ public static class MikaSessionFactory
 
 public sealed class SessionManager
 {
-    private ConcurrentDictionary<long, MikaSession> Sessions {get; init;} = new();
+    public ConcurrentDictionary<long, MikaSession> Sessions {get; init;} = new();
     
     public int Count => Sessions.Count;
     
@@ -52,7 +52,7 @@ public sealed class SessionManager
     }
 }
 
-public sealed class MikaSession
+public sealed class MikaSession : IDisposable
 {
     /// <summary>
     /// _sequenceKey와 CreateSessionId()를 통해 Unique한 SessionId를 발급
@@ -67,10 +67,10 @@ public sealed class MikaSession
     
     public EndPoint? RemoteEndPoint { get; }
     public long SessionId { get; init; }
-    public bool IsConnected { get; }
+    public bool IsConnected { get; private set; } = false;
     
     public event Func<MikaSession, ReadOnlyMemory<byte>, ValueTask>? Received;
-    public event Func<MikaSession, ValueTask>? Disconnected;
+    public event Action<MikaSession>? Disconnected;
     public MikaSession(Socket socket, long sessionId)
     {
         _socket = socket;
@@ -96,28 +96,45 @@ public sealed class MikaSession
         SessionId = sessionId;
     }
 
-    public async Task Connected()
+    public void Disconnect()
     {
+        if (!IsConnected)
+            return;
+        
+        IsConnected = false;
+
+        try
+        {
+            _socket.Shutdown(SocketShutdown.Both);
+        }
+        catch (SocketException)
+        {
+        }
+        catch (ObjectDisposedException)
+        {
+        }
+        
+        Disconnected?.Invoke(this);
+        Dispose();
+    }
+
+    public async Task StartAsync()
+    {
+        if (IsConnected)
+            return;
+        
+        IsConnected = true;
+
         try
         {
             await ReceiveLoop();
         }
-        catch (Exception Ex)
+        finally
         {
-            
+            Disconnect();
         }
     }
 
-    public async Task Disconnect()
-    {
-        
-    }
-
-    public async Task Accepted()
-    {
-        await ReceiveLoop();
-    }
-    
     public async Task OnReceived(ReadOnlyMemory<byte> data)
     {
         var handler = Received;
@@ -146,6 +163,11 @@ public sealed class MikaSession
             await OnReceived(data);
         }
         
-        await Disconnect();
+        Disconnect();
+    }
+
+    public void Dispose()
+    {
+        _socket.Dispose();
     }
 }

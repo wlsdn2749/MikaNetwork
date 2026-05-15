@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using MikaServerCore.Network;
 
 namespace MikaServerCore;
 
@@ -12,9 +13,20 @@ public class MikaConnector : IDisposable
     public void Connect(string ipAddress, int port) => _connectSocket.Connect(ipAddress, port);
     public void Connect(IPAddress ipAddress, int port) => _connectSocket.Connect(ipAddress, port);
     
-    public async Task ConnectAsync(string ipAddress, int port) => await _connectSocket.ConnectAsync(ipAddress, port);
-    public async Task ConnectAsync(IPAddress ipAddress, int port) => await _connectSocket.ConnectAsync(ipAddress, port);
+    public async Task<MikaSession> ConnectAsync(string ipAddress, int port)
+    {
+        await _connectSocket.ConnectAsync(ipAddress, port);
+        
+        return MikaSessionFactory.Create(_connectSocket);
+    }
 
+    public async Task<MikaSession> ConnectAsync(IPAddress ipAddress, int port)
+    {
+        await _connectSocket.ConnectAsync(ipAddress, port);
+        
+        return MikaSessionFactory.Create(_connectSocket);
+    }
+    
     public void Send(string message)
     {
         // string -> byte

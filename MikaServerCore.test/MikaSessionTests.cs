@@ -34,4 +34,33 @@ public class MikaSessionTests
         connectors.Count.ShouldBe(count);
         server.SessionManager.Count.ShouldBe(count);
     }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(3)]
+    [InlineData(100)]
+    public async Task DisconnectSessions(int count)
+    {
+        using var server = new MikaServer(IPAddress.Loopback, 0);
+        server.Listen();
+
+        var serverPort = ((IPEndPoint)server.EndPoint).Port;
+        
+        var clients = new List<MikaClient>();
+        for(int i=0; i<count; i++)
+        {
+            var client = new MikaClient();
+            await client.ConnectAsync(IPAddress.Loopback, serverPort);
+            clients.Add(client);
+        }
+        
+        SpinWait.SpinUntil(() => server.SessionManager.Count == count, TimeSpan.FromSeconds(1));
+        foreach (var client in clients)
+        {
+            client.Disconnect();
+        }
+        
+        SpinWait.SpinUntil(() => server.SessionManager.Count == 0, TimeSpan.FromSeconds(2));
+        server.SessionManager.Count.ShouldBe(0);
+    }
 }
