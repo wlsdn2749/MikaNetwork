@@ -57,13 +57,14 @@ public sealed class MikaSession : IDisposable
     /// <summary>
     /// _sequenceKey와 CreateSessionId()를 통해 Unique한 SessionId를 발급
     /// </summary>
-    private readonly Socket _socket;
-    private readonly Channel<byte[]> _sendQueue;
-    private readonly Channel<byte[]> _receiveQueue;
-    private readonly CancellationTokenSource _cts;
+    private readonly Socket                     _socket;
+    private readonly Channel<byte[]>            _sendQueue;
+    private readonly MikaRecvBuffer             _recvBuffer;
+    private readonly CancellationTokenSource    _cts;
 
     private const int SendQueueCapacity = 1024;
-    //private const int ReceiveQueueCapacity = 1024;
+    private const int MaxPacketSize = 4096;
+    private const int MaxRecvBufferSize = 64 * 1024; 
     
     public EndPoint? RemoteEndPoint { get; }
     public long SessionId { get; init; }
@@ -82,15 +83,7 @@ public sealed class MikaSession : IDisposable
                 AllowSynchronousContinuations = false,
                 FullMode = BoundedChannelFullMode.Wait
             });
-
-        _receiveQueue = Channel.CreateUnbounded<byte[]>(
-            new UnboundedChannelOptions()
-            {
-                SingleReader = true,
-                SingleWriter = false,
-                AllowSynchronousContinuations = false
-            });
-        
+        _recvBuffer = new MikaRecvBuffer(MaxRecvBufferSize);
         //
         
         SessionId = sessionId;
@@ -170,4 +163,9 @@ public sealed class MikaSession : IDisposable
     {
         _socket.Dispose();
     }
+}
+
+public void Send()
+{
+    
 }
