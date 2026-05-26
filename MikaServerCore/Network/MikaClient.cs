@@ -13,6 +13,7 @@ public sealed class MikaClient
         Session = await _connector.ConnectAsync(ipAddress, port);
 
         Session.Received += OnReceived;
+        Session.Connected += OnConnected;
         Session.Disconnected += OnDisconnected;
 
         _ = Session.StartAsync();
@@ -23,6 +24,10 @@ public sealed class MikaClient
         Session?.Disconnect();
     }
 
+    public void Send(byte[] data)
+    {
+        Session?.Send(data);
+    }
     private ValueTask OnReceived(MikaSession session, ReadOnlyMemory<byte> data)
     {
         return ValueTask.CompletedTask;
@@ -31,11 +36,12 @@ public sealed class MikaClient
     
     private void OnConnected(MikaSession session)
     {
-        
+        Console.WriteLine($"Connected to {session.RemoteEndPoint}");
     }
 
     private void OnDisconnected(MikaSession session)
     {
-        
+        Console.WriteLine($"$Disconnected from {session.RemoteEndPoint}");
     }
+    
 }

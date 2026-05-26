@@ -6,7 +6,7 @@ public class MikaRecvBuffer
     private int _readOffset;
     private int _writeOffset;
 
-    public int ReadableBytes => _readOffset - _writeOffset;
+    public int ReadableBytes => _writeOffset - _readOffset;
     public int WritableBytes => _buffer.Length - _writeOffset;
     
     

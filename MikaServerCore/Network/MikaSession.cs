@@ -66,12 +66,14 @@ public sealed class MikaSession : IDisposable
     private const int MaxPacketSize = 4096;
     private const int MaxRecvBufferSize = 64 * 1024; 
     
-    public EndPoint? RemoteEndPoint { get; }
+    public EndPoint? RemoteEndPoint => _socket.RemoteEndPoint;
     public long SessionId { get; init; }
     public bool IsConnected { get; private set; } = false;
     
     public event Func<MikaSession, ReadOnlyMemory<byte>, ValueTask>? Received;
     public event Action<MikaSession>? Disconnected;
+    public event Action<MikaSession>? Connected;
+    
     public MikaSession(Socket socket, long sessionId)
     {
         _socket = socket;
@@ -84,8 +86,6 @@ public sealed class MikaSession : IDisposable
                 FullMode = BoundedChannelFullMode.Wait
             });
         _recvBuffer = new MikaRecvBuffer(MaxRecvBufferSize);
-        //
-        
         SessionId = sessionId;
     }
 
@@ -93,12 +93,12 @@ public sealed class MikaSession : IDisposable
     {
         if (!IsConnected)
             return;
-        
+
         IsConnected = false;
 
         try
         {
-            _socket.Shutdown(SocketShutdown.Both);
+            _socket?.Shutdown(SocketShutdown.Both);
         }
         catch (SocketException)
         {
@@ -117,10 +117,11 @@ public sealed class MikaSession : IDisposable
             return;
         
         IsConnected = true;
-
+        Connected?.Invoke(this);
+        
         try
         {
-            await ReceiveLoop();
+            await Task.WhenAll(ReceiveLoop(), SendLoop());
         }
         finally
         {
@@ -159,13 +160,35 @@ public sealed class MikaSession : IDisposable
         Disconnect();
     }
 
+    public void Send(byte[] data)
+    {
+        _sendQueue.Writer.TryWrite(data);
+    }
+
+    private async Task SendLoop()
+    {
+        try
+        {
+            while (await _sendQueue.Reader.WaitToReadAsync(_cts.Token))
+            {
+                while (_sendQueue.Reader.TryRead(out byte[]? data))
+                {
+                    if (!IsConnected) continue;
+
+                    await _socket.SendAsync(data, SocketFlags.None);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Disconnect();
+        }
+    }
+
     public void Dispose()
     {
         _socket.Dispose();
     }
-}
-
-public void Send()
-{
+    
     
 }

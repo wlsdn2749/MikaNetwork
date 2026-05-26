@@ -6,6 +6,16 @@ namespace MikaServerCore.Network;
 /// 3. id, size는 먼저 body를 serialize한 후, size를 측정하여 앞 비트에 써넣는 방식을 사용하며 
 /// 4. body부분은 MemoryPack 등으로 Serialize/Deserialize 한다.
 /// </summary>
+///
+
+// public readonly struct PacketHeader(ushort id, ushort size);
+public enum PacketId : ushort
+{
+    None = 0,
+    C_EchoRequest = 1,
+    S_EchoResponse = 2
+}
+
 public class MikaPacketBuilder
 {
     private const int HeaderSize = sizeof(ushort) + sizeof(ushort);
@@ -20,7 +30,7 @@ public class MikaPacketBuilder
     {
         byte[] packet = new byte[HeaderSize + MaxBodySize];
 
-        body.CopyTo(packet, HeaderSize); // 직렬화된 바디 복사
+        body.CopyTo(packet, HeaderSize); // 직렬화된 바디 복사... HeaderSize만큼 빼고
         BitConverter.TryWriteBytes(packet.AsSpan(0, sizeof(ushort)), packetId);
         BitConverter.TryWriteBytes(packet.AsSpan(sizeof(ushort), sizeof(ushort)), HeaderSize + body.Length);
 
