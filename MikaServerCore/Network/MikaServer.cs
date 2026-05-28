@@ -5,10 +5,9 @@ namespace MikaServerCore.Network;
 public class MikaServer : IDisposable
 {
     private readonly MikaAcceptor _acceptor;
-    private readonly PacketManager _packetManager = new();
     public SessionManager SessionManager { get; init; } = new();
-    
-    
+
+    public event Func<MikaSession, ReadOnlyMemory<byte>, ValueTask>? PacketReceived;
     public EndPoint EndPoint => _acceptor.EndPoint;
     
     public MikaServer(int port)
@@ -65,21 +64,27 @@ public class MikaServer : IDisposable
     private void OnAccepted(MikaSession session)
     {
         session.Disconnected += OnDisconnected;
-        session.Received += OnReceived;
+        session.Received += OnSessionPacketReceived;
         
         SessionManager.TryAdd(session.SessionId, session);
 
         _ = session.StartAsync();
-
-    }
-
-    private ValueTask OnReceived(MikaSession session, ReadOnlyMemory<byte> data)
-    {
-        _packetManager.OnRecvPacket(session, data);
-        return ValueTask.CompletedTask;
     }
     private void OnDisconnected(MikaSession session)
     {
+        session.Received -= OnSessionPacketReceived;
+        
         SessionManager.TryRemove(session.SessionId, out _);
     }
+
+    private async ValueTask OnSessionPacketReceived(MikaSession session, ReadOnlyMemory<byte> data)
+    {
+        var handler = PacketReceived;
+        if (handler != null)
+        {
+            await handler(session, data);
+        }
+    }
+    
+    
 }

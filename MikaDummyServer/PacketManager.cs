@@ -6,7 +6,7 @@ public class PacketManager
 {
     private readonly Dictionary<ushort, Action<MikaSession, ReadOnlyMemory<byte>>> _handlers = new();
     
-    PacketManager()
+    public PacketManager()
     {
         Register();
     }
