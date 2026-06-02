@@ -67,6 +67,8 @@ public class MikaServer : IDisposable
         session.Received += OnSessionPacketReceived;
         
         SessionManager.TryAdd(session.SessionId, session);
+        
+        Console.WriteLine($"[{session.SessionId}] Accepted");
 
         _ = session.StartAsync();
     }

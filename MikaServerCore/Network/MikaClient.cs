@@ -6,13 +6,14 @@ public sealed class MikaClient
 {
     private readonly MikaConnector _connector = new();
     public MikaSession? Session { get; private set; }
+    public event Func<MikaSession, ReadOnlyMemory<byte>, ValueTask>? PacketReceived;
 
     public async Task ConnectAsync(string ip, int port) => await ConnectAsync(IPAddress.Parse(ip), port);
     public async Task ConnectAsync(IPAddress ipAddress, int port)
     {
         Session = await _connector.ConnectAsync(ipAddress, port);
 
-        Session.Received += OnReceived;
+        Session.Received += OnSessionPacketReceived;
         Session.Connected += OnConnected;
         Session.Disconnected += OnDisconnected;
 
@@ -28,9 +29,14 @@ public sealed class MikaClient
     {
         Session?.Send(data);
     }
-    private ValueTask OnReceived(MikaSession session, ReadOnlyMemory<byte> data)
+
+    private async ValueTask OnSessionPacketReceived(MikaSession session, ReadOnlyMemory<byte> data)
     {
-        return ValueTask.CompletedTask;
+        var handler = PacketReceived;
+        if (handler != null)
+        {
+            await handler(session, data);
+        }
     }
     
     
