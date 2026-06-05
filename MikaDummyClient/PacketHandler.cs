@@ -1,11 +1,12 @@
+using MikaProtocol;
 using MikaServerCore.Network;
 
 namespace MikaDummyClient;
 
-public class PacketHandler
+public static class PacketHandler
 {
-    public static void Handle_S_EchoResponse(MikaSession session, ReadOnlyMemory<byte> data)
+    public static void Handle_S_EchoResponse(MikaSession session, S_EchoResponse res)
     {
-        Console.WriteLine($"Received EchoRequest: {data}");
+        Console.WriteLine($"[Client] Recv Echo: {res.Message}");
     }
 }
