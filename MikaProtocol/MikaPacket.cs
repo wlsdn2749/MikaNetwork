@@ -21,6 +21,7 @@ public enum PacketId : ushort
 [MemoryPackable]
 public partial class C_EchoRequest : IPacket
 {
+    [MemoryPackIgnore]
     public PacketId Id => PacketId.C_EchoRequest;
 
     public string Message { get; set; } = "";
@@ -29,6 +30,7 @@ public partial class C_EchoRequest : IPacket
 [MemoryPackable]
 public partial class S_EchoResponse : IPacket
 {
+    [MemoryPackIgnore]
     public PacketId Id => PacketId.S_EchoResponse;
     
     public string Message { get; set; } = "";

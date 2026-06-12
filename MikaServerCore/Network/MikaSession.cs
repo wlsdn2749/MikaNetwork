@@ -166,9 +166,9 @@ public sealed class MikaSession : IDisposable
                 
                 if (size <= _recvBuffer.ReadableBytes)
                 {
-                    var body = MikaPacketBuilder.ReadBody(_recvBuffer.GetReadableSpan().ToArray().AsMemory());
+                    var data = MikaPacketBuilder.ReadPacket(_recvBuffer.GetReadableSpan());
                     _recvBuffer.AdvanceRead(size);
-                    await OnReceived(body);
+                    await OnReceived(data);
                 }
                 else
                 {

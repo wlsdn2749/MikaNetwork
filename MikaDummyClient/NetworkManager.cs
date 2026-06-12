@@ -25,7 +25,7 @@ public class NetworkManager : Singleton<NetworkManager>
         await _client.ConnectAsync("127.0.0.1", 10010);
     }
 
-    public void Send(IPacket packet)
+    public void Send<T>(T packet) where T : IPacket
     {
         _client.SendPacket(packet);
     }
