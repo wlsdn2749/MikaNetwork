@@ -2,13 +2,17 @@ namespace MikaServerCore.Network;
 
 public static class MikaPacketBuilder
 {
-    private const int HeaderSize = sizeof(ushort) + sizeof(ushort);
-    private const int MaxBodySize = 4096;
+    public const int HeaderSize = sizeof(ushort) + sizeof(ushort);
+    public const int MaxPacketSize = 4096;
     
     static MikaPacketBuilder()
     {
         
     }
+    
+    public static ushort ReadId(ReadOnlySpan<byte> packet) => BitConverter.ToUInt16(packet);
+    public static ushort ReadSize(ReadOnlySpan<byte> packet) => BitConverter.ToUInt16(packet.Slice(sizeof(ushort)));
+    public static ReadOnlyMemory<byte> ReadBody(ReadOnlyMemory<byte> packet) => packet.Slice(HeaderSize);
 
     public static byte[] MakePacket(ushort packetId, byte[] body)
     {

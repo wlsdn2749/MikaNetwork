@@ -7,18 +7,7 @@ namespace MikaDummyServer
     {
         private static void Main(string[] args)
         {
-            var server = new MikaServer(10010);
-
-            var packetManager = new PacketManager();
-            packetManager.Register<C_EchoRequest>(PacketId.C_EchoRequest, PacketHandler.Handle_C_EchoRequest);
-
-            server.PacketReceived += (session, data) =>
-            {
-                packetManager.OnRecvPacket(session, data);
-                return ValueTask.CompletedTask;
-            };
-
-            server.Listen();
+            NetworkManager.Instance.Initialize();
 
             Console.WriteLine("[Server] 10010 포트에서 대기 중...");
             Console.WriteLine("[Server] 종료하려면 엔터를 누르세요.");

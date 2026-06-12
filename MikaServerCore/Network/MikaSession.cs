@@ -63,7 +63,6 @@ public sealed class MikaSession : IDisposable
     private readonly CancellationTokenSource    _cts;
 
     private const int SendQueueCapacity = 1024;
-    private const int MaxPacketSize = 4096;
     private const int MaxRecvBufferSize = 64 * 1024; 
     
     public EndPoint? RemoteEndPoint => _socket.RemoteEndPoint;
@@ -145,7 +144,7 @@ public sealed class MikaSession : IDisposable
         while (IsConnected)
         {
             // 여기서 recvBuffer에 직접쓸 공간 가져오기 새 할당 XX
-            var buffer =_recvBuffer.GetWritableMemory(MaxPacketSize);
+            var buffer =_recvBuffer.GetWritableMemory(MikaPacketBuilder.MaxPacketSize);
             int received = await _socket.ReceiveAsync(buffer);
             
             if (received == 0)
@@ -154,14 +153,22 @@ public sealed class MikaSession : IDisposable
             }
             
             _recvBuffer.AdvanceWrite(received);
-            while (_recvBuffer.ReadableBytes >= 4) // PacketHeader
+            while (_recvBuffer.ReadableBytes >= MikaPacketBuilder.HeaderSize) // PacketHeader
             {
-                var size = BitConverter.ToUInt16(_recvBuffer.GetReadableSpan().Slice(2, 2));
+                var size = MikaPacketBuilder.ReadSize(_recvBuffer.GetReadableSpan());
+                
+                // 읽은 사이즈가 Header보다 작거나, 패킷 사이즈보다 클 경우 차단
+                if (size < MikaPacketBuilder.HeaderSize || size > MikaPacketBuilder.MaxPacketSize)
+                {
+                    Disconnect();
+                    return;
+                }
+                
                 if (size <= _recvBuffer.ReadableBytes)
                 {
-                    var data = _recvBuffer.GetReadableSpan().Slice(0, size).ToArray().AsMemory();
+                    var body = MikaPacketBuilder.ReadBody(_recvBuffer.GetReadableSpan().ToArray().AsMemory());
                     _recvBuffer.AdvanceRead(size);
-                    await OnReceived(data);
+                    await OnReceived(body);
                 }
                 else
                 {
@@ -201,6 +208,7 @@ public sealed class MikaSession : IDisposable
     public void Dispose()
     {
         _socket.Dispose();
+        _cts.Cancel();
     }
     
     

@@ -11,6 +11,7 @@
     <ItemGroup>
       <ProjectReference Include="..\MikaProtocol\MikaProtocol.csproj" />
       <ProjectReference Include="..\MikaServerCore\MikaServerCore.csproj" />
+      <ProjectReference Include="..\MikaUtils\MikaUtils.csproj" />
     </ItemGroup>
 
 </Project>

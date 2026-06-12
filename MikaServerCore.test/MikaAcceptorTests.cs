@@ -30,22 +30,25 @@ public class MikaAcceptorTests
     public async Task Accept_Multiple_TcpClient(int count)
     {
         var acceptor = new MikaAcceptor(IPAddress.Loopback, 0);
+        var acceptedSessions = new List<MikaSession>();
+        acceptor.Accepted += session => { lock (acceptedSessions) acceptedSessions.Add(session); };
         acceptor.Listen();
 
         var connectors = new List<TcpClient>();
-        var acceptClients = new List<Socket>();
-        
+
         int port = ((IPEndPoint)acceptor.EndPoint).Port;
-        
+
         for (int i = 0; i < count; i++)
         {
             var connector = new TcpClient();
             connectors.Add(connector);
-            
+
             await connector.ConnectAsync(IPAddress.Loopback, port);
         }
-        
-        acceptClients.ShouldAllBe(socket => socket.Connected);
+
+        (await TestHelpers.WaitUntilAsync(
+            () => { lock (acceptedSessions) return acceptedSessions.Count == count; },
+            TimeSpan.FromSeconds(2))).ShouldBeTrue();
     }
     
 }

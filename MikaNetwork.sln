@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MikaServerCore.test", "Mika
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MikaProtocol", "MikaProtocol\MikaProtocol.csproj", "{6C5C67D1-588D-4227-B5DF-AFF50A7AF7C2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MikaUtils", "MikaUtils\MikaUtils.csproj", "{0D2D12D0-599F-4BA1-A957-07B36EE82E97}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{6C5C67D1-588D-4227-B5DF-AFF50A7AF7C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C5C67D1-588D-4227-B5DF-AFF50A7AF7C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C5C67D1-588D-4227-B5DF-AFF50A7AF7C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D2D12D0-599F-4BA1-A957-07B36EE82E97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D2D12D0-599F-4BA1-A957-07B36EE82E97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D2D12D0-599F-4BA1-A957-07B36EE82E97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D2D12D0-599F-4BA1-A957-07B36EE82E97}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

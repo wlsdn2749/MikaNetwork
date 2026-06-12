@@ -1,20 +1,18 @@
 using MemoryPack;
-using MikaProtocol.Interfaces;
-using MikaServerCore.Network;
 
-namespace MikaProtocol;
+namespace MikaServerCore.Network;
 
 /// <summary>
 /// 수신 디스패처. PacketId → "그 타입으로 역직렬화 후 핸들러 호출"하는 어댑터를 등록해둔다.
 /// 등록 시점에만 구체 타입 T를 알면 되고, 수신부(OnRecvPacket)는 타입을 몰라도 된다.
 /// </summary>
-public sealed class PacketManager
+public sealed class MikaPacketManager
 {
     private readonly Dictionary<ushort, Action<MikaSession, ReadOnlyMemory<byte>>> _handlers = new();
 
-    public void Register<T>(PacketId id, Action<MikaSession, T> handler) where T : IPacket
+    public void Register<T>(ushort id, Action<MikaSession, T> handler)
     {
-        _handlers[(ushort)id] = (session, body) =>
+        _handlers[id] = (session, body) =>
         {
             var packet = MemoryPackSerializer.Deserialize<T>(body.Span)!;
             handler(session, packet);
@@ -23,10 +21,10 @@ public sealed class PacketManager
 
     public void OnRecvPacket(MikaSession session, ReadOnlyMemory<byte> packet)
     {
-        if (packet.Length < 4) return;                       // 최소 헤더 크기
+        if (packet.Length < MikaPacketBuilder.HeaderSize) return;                       // 최소 헤더 크기
 
-        ushort id   = BitConverter.ToUInt16(packet.Span);    // [0..2) = id
-        var    body = packet.Slice(4);                       // [4..]  = body (헤더 제외)
+        ushort id   = MikaPacketBuilder.ReadId(packet.Span);    // [0..2) = id
+        var body = MikaPacketBuilder.ReadBody(packet);                 // [4..]  = body (헤더 제외)
 
         if (_handlers.TryGetValue(id, out var handler))
         {
