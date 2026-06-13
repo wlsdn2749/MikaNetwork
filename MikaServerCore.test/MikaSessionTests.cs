@@ -6,6 +6,7 @@ namespace MikaServerCore.test;
 
 public class MikaSessionTests
 {
+    /// <summary>여러 클라이언트가 연결되면 모두 IsConnected이고 서버의 SessionManager에 연결 수만큼 등록되는지 확인한다.</summary>
     [Theory]
     [InlineData(1)]
     [InlineData(3)]
@@ -28,13 +29,15 @@ public class MikaSessionTests
         }
         
         // 서버가 백그라운드 동안 Accept -> SessionAdd 할 시간을 확보
-        SpinWait.SpinUntil(() => connectors.Count == count, TimeSpan.FromSeconds(1));
+        await TestHelpers.WaitUntilAsync(() => server.SessionManager.Count == count, TimeSpan.FromSeconds(2));
         
         connectors.ShouldAllBe(connector => connector.IsConnected);
         connectors.Count.ShouldBe(count);
         server.SessionManager.Count.ShouldBe(count);
+        
     }
 
+    /// <summary>연결된 클라이언트들을 모두 끊으면 서버의 SessionManager에서 세션이 전부 제거되는지 확인한다.</summary>
     [Theory]
     [InlineData(1)]
     [InlineData(3)]

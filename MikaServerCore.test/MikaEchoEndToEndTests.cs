@@ -19,6 +19,7 @@ public class MikaEchoEndToEndTests
         return MikaPacketBuilder.MakePacket(id, MemoryPackSerializer.Serialize(packet));
     }
 
+    /// <summary>클라이언트 송신 → 서버 디스패치 → 응답 → 클라이언트 수신까지 전 스택을 관통해 같은 메시지가 그대로 에코되는지 확인한다.</summary>
     [Theory]
     [InlineData("Hello Mika!")]
     [InlineData("안녕하세요")]

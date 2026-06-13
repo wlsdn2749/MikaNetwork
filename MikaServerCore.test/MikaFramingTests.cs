@@ -26,6 +26,7 @@ public class MikaFramingTests
         return (server, received);
     }
 
+    /// <summary>한 패킷이 여러 TCP 세그먼트로 쪼개져 도착할 때, 완성되기 전엔 전달되지 않다가 완성되면 정확히 1번 재조립되는지 확인한다.</summary>
     [Fact]
     public async Task Split_Packet_Is_Reassembled()
     {
@@ -53,6 +54,7 @@ public class MikaFramingTests
         framed.ShouldBe(packet);
     }
 
+    /// <summary>여러 패킷이 한 번의 수신으로 뭉쳐 들어와도(sticky packet) 각각 개별 패킷으로 분리·디스패치되는지 확인한다.</summary>
     [Fact]
     public async Task Coalesced_Packets_Are_Dispatched_Individually()
     {
@@ -77,6 +79,7 @@ public class MikaFramingTests
         received.ToArray().ShouldBe(packets);
     }
 
+    /// <summary>한 번의 수신 청크 크기를 넘는 큰 패킷이 여러 번의 Receive에 걸쳐 손실 없이 재조립되는지 확인한다.</summary>
     [Fact]
     public async Task Packet_Larger_Than_Recv_Chunk_Is_Reassembled()
     {
@@ -97,6 +100,7 @@ public class MikaFramingTests
         framed.ShouldBe(packet);
     }
 
+    /// <summary>size=0인 손상/악성 헤더가 와도 무한 루프에 빠지지 않고 프로토콜 위반으로 세션을 끊는지 확인한다.</summary>
     [Fact]
     public async Task Malformed_Size_Zero_Packet_Disconnects_Session()
     {

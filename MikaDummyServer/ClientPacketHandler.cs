@@ -3,9 +3,9 @@ using MikaServerCore.Network;
 
 namespace MikaDummyServer;
 
-public static class PacketHandler
+public static class ClientPacketHandler
 {
-    // 이제 byte[]가 아니라 역직렬화된 객체를 바로 받는다.
+    [PacketHandler]
     public static void Handle_C_EchoRequest(MikaSession session, C_EchoRequest req)
     {
         Console.WriteLine($"[Server] Recv Echo: {req.Message}");

@@ -26,6 +26,7 @@ public class MikaPacketManagerTests
         return MikaPacketBuilder.MakePacket(id, body);
     }
 
+    /// <summary>등록한 핸들러가 올바른 타입으로 역직렬화된 패킷과 원본 세션을 그대로 전달받는지 확인한다.</summary>
     [Fact]
     public void Registered_Handler_Receives_Deserialized_Packet()
     {
@@ -48,6 +49,7 @@ public class MikaPacketManagerTests
         receivedSession.ShouldBeSameAs(session);
     }
 
+    /// <summary>등록되지 않은 PacketId가 오면 예외 없이 조용히 무시되는지 확인한다.</summary>
     [Fact]
     public void Unknown_PacketId_Is_Ignored()
     {
@@ -61,6 +63,7 @@ public class MikaPacketManagerTests
         called.ShouldBeFalse();
     }
 
+    /// <summary>헤더(4바이트)보다 짧은 패킷이 오면 예외 없이 무시되는지 확인한다.</summary>
     [Fact]
     public void Packet_Shorter_Than_Header_Is_Ignored()
     {
@@ -72,6 +75,7 @@ public class MikaPacketManagerTests
         called.ShouldBeFalse();
     }
 
+    /// <summary>같은 PacketId로 두 번 등록하면 나중 등록이 이전 핸들러를 덮어쓰는지 확인한다.</summary>
     [Fact]
     public void Last_Registration_Wins_For_Same_Id()
     {

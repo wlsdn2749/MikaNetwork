@@ -7,18 +7,13 @@ namespace MikaDummyClient;
 
 public class NetworkManager : Singleton<NetworkManager>
 {
-    private MikaClient _client;
-    
+    private readonly MikaClient _client = new();
+    private readonly ServerPacketManager _packetManager = new();
     public async Task Initialize()
     {
-        _client = new MikaClient();
-        
-        var packetManager = new MikaPacketManager();
-        packetManager.Register<S_EchoResponse>((ushort)PacketId.S_EchoResponse, PacketHandler.Handle_S_EchoResponse);
-
         _client.PacketReceived += (session, data) =>
         {
-            packetManager.OnRecvPacket(session, data);
+            _packetManager.OnRecvPacket(session, data);
             return ValueTask.CompletedTask;
         };
         

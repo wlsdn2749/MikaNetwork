@@ -63,7 +63,8 @@ public sealed class MikaSession : IDisposable
     private readonly CancellationTokenSource    _cts;
 
     private const int SendQueueCapacity = 1024;
-    private const int MaxRecvBufferSize = 64 * 1024; 
+    private const int MaxRecvBufferSize = ushort.MaxValue;
+    private const int RecvChunkSize     = 4096;
     
     public EndPoint? RemoteEndPoint => _socket.RemoteEndPoint;
     public long SessionId { get; init; }
@@ -144,7 +145,7 @@ public sealed class MikaSession : IDisposable
         while (IsConnected)
         {
             // 여기서 recvBuffer에 직접쓸 공간 가져오기 새 할당 XX
-            var buffer =_recvBuffer.GetWritableMemory(MikaPacketBuilder.MaxPacketSize);
+            var buffer =_recvBuffer.GetWritableMemory(RecvChunkSize);
             int received = await _socket.ReceiveAsync(buffer);
             
             if (received == 0)
@@ -166,7 +167,7 @@ public sealed class MikaSession : IDisposable
                 
                 if (size <= _recvBuffer.ReadableBytes)
                 {
-                    var data = MikaPacketBuilder.ReadPacket(_recvBuffer.GetReadableSpan());
+                    var data = MikaPacketBuilder.ReadPacket(_recvBuffer.GetReadableSpan(), size);
                     _recvBuffer.AdvanceRead(size);
                     await OnReceived(data);
                 }
@@ -182,7 +183,8 @@ public sealed class MikaSession : IDisposable
 
     public void Send(byte[] data)
     {
-        _sendQueue.Writer.TryWrite(data); 
+        if(!_sendQueue.Writer.TryWrite(data)) // 송신 Queue에 넣는데 실패하면, 연결 끊음 
+            Disconnect(); 
     }
 
     private async Task SendLoop()

@@ -14,7 +14,7 @@ public static class MikaSessionPacketExtensions
     public static void SendPacket<T>(this MikaSession session, T packet) where T : IPacket
     {
         byte[] body   = MemoryPackSerializer.Serialize(packet);          // body 직렬화
-        byte[] framed = MikaPacketBuilder.MakePacket((ushort)packet.Id, body); // [id][size][body]
+        byte[] framed = MikaPacketBuilder.MakePacket(PacketIdResolver.Get(typeof(T)), body); // [id][size][body]
         session.Send(framed);                                            // Core의 byte[] Send 재사용
     }
 

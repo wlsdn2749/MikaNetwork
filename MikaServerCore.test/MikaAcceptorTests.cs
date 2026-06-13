@@ -9,6 +9,7 @@ namespace MikaServerCore.test;
 
 public class MikaAcceptorTests
 {
+    /// <summary>Listen 중인 Acceptor에 TcpClient가 정상적으로 연결되는지 확인한다.</summary>
     [Fact]
     public async Task Start_To_Accept_TcpClient()
     {
@@ -23,6 +24,7 @@ public class MikaAcceptorTests
         connector.ShouldNotBeNull();
     }
 
+    /// <summary>여러 클라이언트가 동시에 연결될 때 Accepted 이벤트가 연결 수만큼 발화하는지 확인한다.</summary>
     [Theory]
     [InlineData(1)]
     [InlineData(3)]

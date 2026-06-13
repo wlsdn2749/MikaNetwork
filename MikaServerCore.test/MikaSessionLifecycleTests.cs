@@ -9,6 +9,7 @@ public class MikaSessionLifecycleTests
 {
     private static readonly TimeSpan Timeout = TimeSpan.FromSeconds(2);
 
+    /// <summary>Disconnect가 여러 경로에서 불려도 Connected·Disconnected 이벤트가 각각 정확히 1번만 발화하는지 확인한다.</summary>
     [Fact]
     public async Task Connected_And_Disconnected_Fire_Exactly_Once()
     {
@@ -34,6 +35,7 @@ public class MikaSessionLifecycleTests
         disconnectedCount.ShouldBe(1);
     }
 
+    /// <summary>서버 쪽에서 세션을 끊었을 때 클라이언트가 이를 감지해 Disconnected를 발화하고 IsConnected가 false가 되는지 확인한다.</summary>
     [Fact]
     public async Task Client_Detects_ServerSide_Disconnect()
     {
@@ -57,6 +59,7 @@ public class MikaSessionLifecycleTests
         clientSession.IsConnected.ShouldBeFalse();
     }
 
+    /// <summary>Disconnect 후 SendLoop까지 종료되어 StartAsync 태스크가 누수 없이 완료(회수)되는지 확인한다.</summary>
     [Fact]
     public async Task StartAsync_Completes_After_Disconnect()
     {
@@ -75,51 +78,37 @@ public class MikaSessionLifecycleTests
         completed.ShouldBe(startTask);
     }
 
+    /// <summary>상대가 읽지 않아 송신 큐가 포화되면, 데이터를 조용히 버리지 않고 세션을 끊는지 확인한다.</summary>
     [Fact]
-    public async Task Send_Under_Backpressure_Does_Not_Drop_Data()
+    public async Task Send_Under_Backpressure_Disconnects_Session()
     {
-        // 상대가 읽지 않는 동안 SendQueue(1024)보다 많이 보내도 데이터가 유실되면 안 된다
+        // peer가 읽지 않으면 OS 송신 버퍼가 차고 SendLoop이 막혀 SendQueue(1024)가 포화된다.
+        // 이때 TryWrite가 실패하므로 데이터를 버리는 대신 세션을 끊는 것이 (A) 정책이다.
         using var listener = new TcpListener(IPAddress.Loopback, 0);
         listener.Start();
         var port = ((IPEndPoint)listener.LocalEndpoint).Port;
 
         using var connector = new MikaConnector();
         var session = await connector.ConnectAsync(IPAddress.Loopback, port);
+
+        int disconnectedCount = 0;
+        session.Disconnected += _ => Interlocked.Increment(ref disconnectedCount);
         _ = session.StartAsync();
 
         using var peer = await listener.AcceptTcpClientAsync().WaitAsync(Timeout);
+        // peer는 일부러 읽지 않는다
 
-        const int packetCount = 3000;
-        const int packetSize = 4096;
-        var payload = new byte[packetSize];
-
-        for (int i = 0; i < packetCount; i++)
+        var payload = new byte[4096];
+        // 포화가 일어날 때까지 계속 밀어넣는다 → 끊기면 IsConnected가 false가 된다
+        var disconnected = await TestHelpers.WaitUntilAsync(() =>
         {
-            session.Send(payload); // peer는 아직 읽지 않음 → 소켓 버퍼/큐가 가득 참
-        }
+            for (int i = 0; i < 1000; i++)
+                session.Send(payload);
+            return !session.IsConnected;
+        }, Timeout);
 
-        // 이제 peer가 전부 읽는다 — 보낸 바이트가 전부 도착해야 한다
-        long expected = (long)packetCount * packetSize;
-        long total = 0;
-        var stream = peer.GetStream();
-        var buffer = new byte[64 * 1024];
-
-        while (total < expected)
-        {
-            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1));
-            int read;
-            try
-            {
-                read = await stream.ReadAsync(buffer, cts.Token);
-            }
-            catch (OperationCanceledException)
-            {
-                break; // 1초간 더 들어오는 데이터 없음 → 유실분 확정
-            }
-            if (read == 0) break;
-            total += read;
-        }
-
-        total.ShouldBe(expected);
+        disconnected.ShouldBeTrue();
+        session.IsConnected.ShouldBeFalse();
+        disconnectedCount.ShouldBeGreaterThanOrEqualTo(1);
     }
 }

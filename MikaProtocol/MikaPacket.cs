@@ -11,6 +11,12 @@ namespace MikaProtocol;
 /// </summary>
 ///
 
+[AttributeUsage(AttributeTargets.Class)]
+public sealed class PacketAttribute(PacketId id) : Attribute { public PacketId Id => id; }
+
+[AttributeUsage(AttributeTargets.Method)]
+public sealed class PacketHandlerAttribute : Attribute { }
+
 public enum PacketId : ushort
 {
     None = 0,
@@ -18,20 +24,15 @@ public enum PacketId : ushort
     S_EchoResponse = 2
 }
 
-[MemoryPackable]
+[MemoryPackable, Packet(PacketId.C_EchoRequest)]
 public partial class C_EchoRequest : IPacket
 {
-    [MemoryPackIgnore]
-    public PacketId Id => PacketId.C_EchoRequest;
 
     public string Message { get; set; } = "";
 }
 
-[MemoryPackable]
+[MemoryPackable, Packet(PacketId.S_EchoResponse)]
 public partial class S_EchoResponse : IPacket
 {
-    [MemoryPackIgnore]
-    public PacketId Id => PacketId.S_EchoResponse;
-    
     public string Message { get; set; } = "";
 }

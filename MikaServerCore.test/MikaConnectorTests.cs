@@ -8,6 +8,7 @@ using Shouldly;
 
 public class MikaConnectorTests
 {
+    /// <summary>Connector가 TcpListener로 떠 있는 서버에 동기 방식으로 연결되는지 확인한다.</summary>
     [Fact]
     public void Connect_To_TcpServer()
     {
@@ -21,6 +22,7 @@ public class MikaConnectorTests
         connector.ShouldNotBeNull();
     }
 
+    /// <summary>Connector가 보낸 메시지가 서버 측에서 동일한 바이트로 수신되는지 확인한다.</summary>
     [Theory]
     [InlineData("Hello World!")]
     [InlineData("123")]
@@ -50,6 +52,7 @@ public class MikaConnectorTests
         recvMessage.ShouldBe(message);
     }
 
+    /// <summary>서버가 보낸 메시지를 Connector가 동일한 문자열로 수신하는지 확인한다.</summary>
     [Theory]
     [InlineData("Hello World!")]
     [InlineData("123")]

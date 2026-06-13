@@ -6,11 +6,14 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>MikaClient</RootNamespace>
+        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
     </PropertyGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\MikaProtocol\MikaProtocol.csproj" />
       <ProjectReference Include="..\MikaServerCore\MikaServerCore.csproj" />
+      <ProjectReference Include="..\MikaSourceGen\MikaSourceGen\MikaSourceGen.csproj"
+                        OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
     </ItemGroup>
 
 </Project>

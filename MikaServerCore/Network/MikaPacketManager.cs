@@ -6,7 +6,7 @@ namespace MikaServerCore.Network;
 /// 수신 디스패처. PacketId → "그 타입으로 역직렬화 후 핸들러 호출"하는 어댑터를 등록해둔다.
 /// 등록 시점에만 구체 타입 T를 알면 되고, 수신부(OnRecvPacket)는 타입을 몰라도 된다.
 /// </summary>
-public sealed class MikaPacketManager
+public class MikaPacketManager
 {
     private readonly Dictionary<ushort, Action<MikaSession, ReadOnlyMemory<byte>>> _handlers = new();
 
