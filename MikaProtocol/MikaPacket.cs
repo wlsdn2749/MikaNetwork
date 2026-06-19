@@ -1,7 +1,8 @@
+using System;
 using MikaProtocol.Interfaces;
 using MemoryPack;
 
-namespace MikaProtocol;
+
 
 /// <summary>
 /// 1. 패킷은 반드시 ushort인 id, size를 포함해야 함.
@@ -11,28 +12,39 @@ namespace MikaProtocol;
 /// </summary>
 ///
 
-[AttributeUsage(AttributeTargets.Class)]
-public sealed class PacketAttribute(PacketId id) : Attribute { public PacketId Id => id; }
-
-[AttributeUsage(AttributeTargets.Method)]
-public sealed class PacketHandlerAttribute : Attribute { }
-
-public enum PacketId : ushort
-{
-    None = 0,
-    C_EchoRequest = 1,
-    S_EchoResponse = 2
-}
-
-[MemoryPackable, Packet(PacketId.C_EchoRequest)]
-public partial class C_EchoRequest : IPacket
+namespace MikaProtocol
 {
 
-    public string Message { get; set; } = "";
-}
+    [AttributeUsage(AttributeTargets.Class)]
+    public sealed class PacketAttribute : Attribute
+    {
+        public PacketId Id { get;}
+        public PacketAttribute(PacketId id)
+        {
+            Id = id;
+        }
+        
+    }
 
-[MemoryPackable, Packet(PacketId.S_EchoResponse)]
-public partial class S_EchoResponse : IPacket
-{
-    public string Message { get; set; } = "";
+    [AttributeUsage(AttributeTargets.Method)]
+    public sealed class PacketHandlerAttribute : Attribute { }
+
+    public enum PacketId : ushort
+    {
+        None = 0,
+        C_EchoRequest = 1,
+        S_EchoResponse = 2
+    }
+
+    [MemoryPackable, Packet(PacketId.C_EchoRequest)]
+    public partial class C_EchoRequest : IPacket
+    {
+        public string Message { get; set; } = "";
+    }
+
+    [MemoryPackable, Packet(PacketId.S_EchoResponse)]
+    public partial class S_EchoResponse : IPacket
+    {
+        public string Message { get; set; } = "";
+    }
 }

@@ -1,7 +1,7 @@
 using MikaUtils;
 using MikaServerCore.Network;
 
-namespace MikaDummyServer;
+namespace MikaDummyServer.Network;
 
 public class NetworkManager : Singleton<NetworkManager>
 {

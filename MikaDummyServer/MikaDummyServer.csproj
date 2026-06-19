@@ -5,13 +5,13 @@
         <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <RootNamespace>MikaServer</RootNamespace>
         <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\MikaNetwork.Server\MikaNetwork.Server.csproj" />
       <ProjectReference Include="..\MikaProtocol\MikaProtocol.csproj" />
-      <ProjectReference Include="..\MikaServerCore\MikaServerCore.csproj" />
+      <ProjectReference Include="..\MikaNetwork.Core\MikaNetwork.Core.csproj" />
       <ProjectReference Include="..\MikaSourceGen\MikaSourceGen\MikaSourceGen.csproj" 
                         OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
       <ProjectReference Include="..\MikaUtils\MikaUtils.csproj" />

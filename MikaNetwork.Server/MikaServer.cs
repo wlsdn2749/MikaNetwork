@@ -1,4 +1,7 @@
 using System.Net;
+using MikaNetwork.Core.Interfaces;
+using MikaNetwork.Core.Network;
+using MikaNetwork.Server;
 
 namespace MikaServerCore.Network;
 
@@ -7,7 +10,7 @@ public class MikaServer : IDisposable
     private readonly MikaAcceptor _acceptor;
     public SessionManager SessionManager { get; init; } = new();
 
-    public event Func<MikaSession, ReadOnlyMemory<byte>, ValueTask>? PacketReceived;
+    public event Func<ISession, ReadOnlyMemory<byte>, ValueTask>? PacketReceived;
     public EndPoint EndPoint => _acceptor.EndPoint;
     
     public MikaServer(int port)
@@ -46,9 +49,9 @@ public class MikaServer : IDisposable
             session?.Send(data);
         }
     }
-    public void Send(MikaSession session, byte[] data)
+    public void Send(MikaServerSession serverSession, byte[] data)
     {
-        session.Send(data);    
+        serverSession.Send(data);    
     }
 
     public void Stop()
@@ -61,25 +64,25 @@ public class MikaServer : IDisposable
         _acceptor.Dispose();
     }
 
-    private void OnAccepted(MikaSession session)
+    private void OnAccepted(MikaServerSession serverSession)
     {
-        session.Disconnected += OnDisconnected;
-        session.Received += OnSessionPacketReceived;
+        serverSession.Disconnected += OnDisconnected;
+        serverSession.Received += OnSessionPacketReceived;
         
-        SessionManager.TryAdd(session.SessionId, session);
+        SessionManager.TryAdd(serverSession.SessionId, serverSession);
         
-        Console.WriteLine($"[{session.SessionId}] Accepted");
+        Console.WriteLine($"[{serverSession.SessionId}] Accepted");
 
-        _ = session.StartAsync();
+        _ = serverSession.StartAsync();
     }
-    private void OnDisconnected(MikaSession session)
+    private void OnDisconnected(ISession session)
     {
         session.Received -= OnSessionPacketReceived;
         
         SessionManager.TryRemove(session.SessionId, out _);
     }
 
-    private async ValueTask OnSessionPacketReceived(MikaSession session, ReadOnlyMemory<byte> data)
+    private async ValueTask OnSessionPacketReceived(ISession session, ReadOnlyMemory<byte> data)
     {
         var handler = PacketReceived;
         if (handler != null)

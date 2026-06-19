@@ -1,7 +1,6 @@
-using MikaProtocol;
-using MikaServerCore.Network;
+using MikaNetwork.Core.Network;
 
-namespace MikaDummyServer;
+namespace MikaDummyServer.Network;
 
 public class ClientPacketManager : MikaPacketManager
 {

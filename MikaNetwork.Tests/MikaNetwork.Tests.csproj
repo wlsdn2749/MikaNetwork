@@ -5,6 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
+        <RootNamespace>MikaServerCore.test</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -21,7 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\MikaServerCore\MikaServerCore.csproj" />
+      <ProjectReference Include="..\MikaNetwork.Core\MikaNetwork.Core.csproj" />
     </ItemGroup>
 
 </Project>

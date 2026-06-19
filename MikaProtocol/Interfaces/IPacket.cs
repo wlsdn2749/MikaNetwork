@@ -1,6 +1,7 @@
-namespace MikaProtocol.Interfaces;
-
-public interface IPacket
+namespace MikaProtocol.Interfaces
 {
-    //public PacketId Id { get; }
+    public interface IPacket
+    {
+        //public PacketId Id { get; }
+    }
 }

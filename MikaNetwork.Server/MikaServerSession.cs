@@ -3,64 +3,21 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Channels;
+using MikaNetwork.Core.Interfaces;
+using MikaNetwork.Core.Network;
+using MikaServerCore.Network;
 
-namespace MikaServerCore.Network;
+namespace MikaNetwork.Server;
 
-// public interface ISessionFactory
-// {
-//     public MikaSession Create(Socket socket);
-// }
-public static class MikaSessionFactory
-{
-    private static long _sequenceKey;
-    
-    public static MikaSession Create(Socket socket)
-    {
-        return new MikaSession(socket, CreateSessionId());
-    }
-    
-    private static long CreateSessionId()
-    {
-        long newKey = Interlocked.Increment(ref _sequenceKey);
-        if (0 == newKey) // overflow시 한번 더 증가시켜서 반환
-        {
-            newKey = Interlocked.Increment(ref _sequenceKey);
-        }
-        return newKey;
-    }
-}
-
-public sealed class SessionManager
-{
-    public ConcurrentDictionary<long, MikaSession> Sessions {get; init;} = new();
-    
-    public int Count => Sessions.Count;
-    
-    public bool TryAdd(long sessionId, MikaSession session)
-    {
-        return Sessions.TryAdd(sessionId, session);
-    }
-
-    public bool TryRemove(long sessionId, out MikaSession? removedSession)
-    {
-        return Sessions.TryRemove(sessionId, out removedSession);
-    }
-
-    public bool TryGet(long sessionId, out MikaSession? session)
-    {
-        return Sessions.TryGetValue(sessionId, out session);
-    }
-}
-
-public sealed class MikaSession : IDisposable
+public sealed class MikaServerSession : ISession
 {
     /// <summary>
     /// _sequenceKey와 CreateSessionId()를 통해 Unique한 SessionId를 발급
     /// </summary>
-    private readonly Socket                     _socket;
-    private readonly Channel<byte[]>            _sendQueue;
-    private readonly MikaRecvBuffer             _recvBuffer;
-    private readonly CancellationTokenSource    _cts;
+    private readonly Socket                             _socket;
+    private readonly Channel<ReadOnlyMemory<byte>>      _sendQueue;
+    private readonly MikaRecvBuffer                     _recvBuffer;
+    private readonly CancellationTokenSource            _cts;
 
     private const int SendQueueCapacity = 1024;
     private const int MaxRecvBufferSize = ushort.MaxValue;
@@ -70,14 +27,14 @@ public sealed class MikaSession : IDisposable
     public long SessionId { get; init; }
     public bool IsConnected { get; private set; } = false;
     
-    public event Func<MikaSession, ReadOnlyMemory<byte>, ValueTask>? Received;
-    public event Action<MikaSession>? Disconnected;
-    public event Action<MikaSession>? Connected;
+    public event Func<ISession, ReadOnlyMemory<byte>, ValueTask>? Received;
+    public event Action<ISession>? Disconnected;
+    public event Action<ISession>? Connected;
     
-    public MikaSession(Socket socket, long sessionId)
+    public MikaServerSession(Socket socket, long sessionId)
     {
         _socket = socket;
-        _sendQueue = Channel.CreateBounded<byte[]>(
+        _sendQueue = Channel.CreateBounded<ReadOnlyMemory<byte>>(
             new BoundedChannelOptions(SendQueueCapacity)
             {
                 SingleReader = true,
@@ -89,6 +46,14 @@ public sealed class MikaSession : IDisposable
         _cts = new CancellationTokenSource();
         SessionId = sessionId;
     }
+
+
+    public void Send(ReadOnlyMemory<byte> data)
+    {
+        if(!_sendQueue.Writer.TryWrite(data)) // 송신 Queue에 넣는데 실패하면, 연결 끊음 
+            Disconnect(); 
+    }
+
 
     public void Disconnect()
     {
@@ -111,6 +76,14 @@ public sealed class MikaSession : IDisposable
         Disconnected?.Invoke(this);
         Dispose();
     }
+    
+    public void Dispose()
+    {
+        _socket.Dispose();
+        _cts.Cancel();
+    }
+    //
+    //
 
     public async Task StartAsync()
     {
@@ -181,19 +154,13 @@ public sealed class MikaSession : IDisposable
         Disconnect();
     }
 
-    public void Send(byte[] data)
-    {
-        if(!_sendQueue.Writer.TryWrite(data)) // 송신 Queue에 넣는데 실패하면, 연결 끊음 
-            Disconnect(); 
-    }
-
     private async Task SendLoop()
     {
         try
         {
             while (await _sendQueue.Reader.WaitToReadAsync(_cts.Token))
             {
-                while (_sendQueue.Reader.TryRead(out byte[]? data))
+                while (_sendQueue.Reader.TryRead(out var data))
                 {
                     if (!IsConnected) return;
 
@@ -207,11 +174,7 @@ public sealed class MikaSession : IDisposable
         }
     }
 
-    public void Dispose()
-    {
-        _socket.Dispose();
-        _cts.Cancel();
-    }
+
     
     
 }

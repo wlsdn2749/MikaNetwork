@@ -1,7 +1,9 @@
 using System.Net;
 using System.Net.Sockets;
+using MikaNetwork.Core.Network;
+using MikaServerCore.Network;
 
-namespace MikaServerCore.Network;
+namespace MikaNetwork.Server;
 
 public class MikaAcceptor : IDisposable
 {
@@ -11,7 +13,7 @@ public class MikaAcceptor : IDisposable
 
     public EndPoint EndPoint => _active ? _listenSocket?.LocalEndPoint! : _listenSocketEp;
 
-    public event Action<MikaSession>? Accepted;
+    public event Action<MikaServerSession>? Accepted;
 
     public MikaAcceptor(string ipAddress, int port) 
         : this(new MikaAcceptorOptions{LocalAddr = IPAddress.Parse(ipAddress), Port = port})
@@ -53,33 +55,6 @@ public class MikaAcceptor : IDisposable
         }
     }
     
-
-    // private async Task HandleClientAsync(Socket acceptClient)
-    // {
-    //     await using NetworkStream stream = new NetworkStream(acceptClient, ownsSocket: true);
-    //
-    //     byte[] buffer = new byte[4096];
-    //
-    //     try
-    //     {
-    //         while (true)
-    //         {
-    //             int bytesRead = await stream.ReadAsync(buffer);
-    //
-    //             if (bytesRead == 0)
-    //             {
-    //                 break;
-    //             }
-    //
-    //             ReadOnlyMemory<byte> received = buffer.AsMemory(0, bytesRead);
-    //         }
-    //
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         
-    //     }
-    // }
     public void Dispose()
     {
         _listenSocket?.Dispose();

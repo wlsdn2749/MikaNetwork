@@ -1,12 +1,13 @@
+using MikaNetwork.Core.Interfaces;
 using MikaProtocol;
-using MikaServerCore.Network;
+using MikaNetwork.Core.Network;
 
-namespace MikaDummyServer;
+namespace MikaDummyServer.Network;
 
 public static class ClientPacketHandler
 {
     [PacketHandler]
-    public static void Handle_C_EchoRequest(MikaSession session, C_EchoRequest req)
+    public static void Handle_C_EchoRequest(ISession session, C_EchoRequest req)
     {
         Console.WriteLine($"[Server] Recv Echo: {req.Message}");
 

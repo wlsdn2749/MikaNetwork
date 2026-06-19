@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
@@ -7,8 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="MemoryPack" Version="1.21.4" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="11.0.0-preview.4.26230.115" />
+      <ProjectReference Include="..\MikaNetwork.Core\MikaNetwork.Core.csproj" />
     </ItemGroup>
 
 </Project>
