@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <LangVersion>11</LangVersion>
         <TargetFrameworks>netstandard2.1;net9.0</TargetFrameworks>
+        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
     </PropertyGroup>
 
     <ItemGroup>
@@ -13,7 +14,16 @@
 
     <ItemGroup>
       <ProjectReference Include="..\MikaNetwork.Core\MikaNetwork.Core.csproj" />
+      <ProjectReference Include="..\MikaSourceGen\MikaSourceGen\MikaSourceGen.csproj"
+                        OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
       <ProjectReference Include="..\MikaUtils\MikaUtils.csproj" />
     </ItemGroup>
+
+    <!-- 빌드되면 패킷 정의(.cs)를 Unity 클라이언트로 단방향 미러링한다.
+         멀티 타깃이라 net9.0 한 번만 실행해 중복을 막는다. -->
+    <Target Name="SyncProtocolToUnity" AfterTargets="Build" Condition="'$(TargetFramework)' == 'net9.0'">
+        <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\..\sync-protocol-to-unity.ps1&quot;"
+              ContinueOnError="true" />
+    </Target>
 
 </Project>

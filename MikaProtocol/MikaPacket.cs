@@ -14,7 +14,6 @@ using MemoryPack;
 
 namespace MikaProtocol
 {
-
     [AttributeUsage(AttributeTargets.Class)]
     public sealed class PacketAttribute : Attribute
     {
@@ -23,11 +22,11 @@ namespace MikaProtocol
         {
             Id = id;
         }
-        
     }
 
     [AttributeUsage(AttributeTargets.Method)]
     public sealed class PacketHandlerAttribute : Attribute { }
+
 
     public enum PacketId : ushort
     {
@@ -47,4 +46,6 @@ namespace MikaProtocol
     {
         public string Message { get; set; } = "";
     }
+    
+    
 }
