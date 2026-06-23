@@ -1,4 +1,4 @@
-using MikaServerCore.Network;
+using MikaNetwork.Core.Network;
 using Shouldly;
 
 namespace MikaServerCore.test;

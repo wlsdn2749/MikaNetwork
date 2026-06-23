@@ -1,7 +1,6 @@
 using System;
 using MikaNetwork.Core.Interfaces;
 using MikaProtocol;
-using MikaServerCore.Network;
 
 namespace MikaDummyClient
 {

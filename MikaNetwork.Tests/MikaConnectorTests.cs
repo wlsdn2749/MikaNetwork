@@ -2,9 +2,10 @@
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text;
+using MikaNetwork.Client;
+using Shouldly;
 
 namespace MikaServerCore.test;
-using Shouldly;
 
 public class MikaConnectorTests
 {

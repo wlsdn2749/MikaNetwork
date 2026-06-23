@@ -1,6 +1,8 @@
 using System.Net.Sockets;
 using MemoryPack;
-using MikaServerCore.Network;
+using MikaNetwork.Core.Interfaces;
+using MikaNetwork.Core.Network;
+using MikaNetwork.Server;
 using Shouldly;
 
 namespace MikaServerCore.test;
@@ -14,7 +16,7 @@ public partial class TestEchoPacket
 public class MikaPacketManagerTests
 {
     // PacketManager는 세션을 핸들러로 넘기기만 하므로 연결 안 된 더미 세션이면 충분하다
-    private static MikaSession CreateDummySession()
+    private static MikaServerSession CreateDummySession()
     {
         var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         return MikaSessionFactory.Create(socket);
@@ -33,7 +35,7 @@ public class MikaPacketManagerTests
         var manager = new MikaPacketManager();
         var session = CreateDummySession();
         TestEchoPacket? received = null;
-        MikaSession? receivedSession = null;
+        ISession? receivedSession = null;
 
         manager.Register<TestEchoPacket>(1, (s, packet) =>
         {

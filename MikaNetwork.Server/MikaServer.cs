@@ -1,9 +1,8 @@
 using System.Net;
 using MikaNetwork.Core.Interfaces;
 using MikaNetwork.Core.Network;
-using MikaNetwork.Server;
 
-namespace MikaServerCore.Network;
+namespace MikaNetwork.Server;
 
 public class MikaServer : IDisposable
 {

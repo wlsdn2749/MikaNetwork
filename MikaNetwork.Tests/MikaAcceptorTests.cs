@@ -3,7 +3,7 @@ using System.Net.Sockets;
 using System.Text;
 using Shouldly;
 
-using MikaServerCore.Network;
+using MikaNetwork.Server;
 
 namespace MikaServerCore.test;
 
@@ -32,7 +32,7 @@ public class MikaAcceptorTests
     public async Task Accept_Multiple_TcpClient(int count)
     {
         var acceptor = new MikaAcceptor(IPAddress.Loopback, 0);
-        var acceptedSessions = new List<MikaSession>();
+        var acceptedSessions = new List<MikaServerSession>();
         acceptor.Accepted += session => { lock (acceptedSessions) acceptedSessions.Add(session); };
         acceptor.Listen();
 

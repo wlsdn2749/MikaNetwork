@@ -23,6 +23,8 @@
 
     <ItemGroup>
       <ProjectReference Include="..\MikaNetwork.Core\MikaNetwork.Core.csproj" />
+      <ProjectReference Include="..\MikaNetwork.Server\MikaNetwork.Server.csproj" />
+      <ProjectReference Include="..\MikaNetwork.Client\MikaNetwork.Client.csproj" />
     </ItemGroup>
 
 </Project>

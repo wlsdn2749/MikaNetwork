@@ -1,12 +1,11 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using MikaNetwork.Client;
 using MikaNetwork.Core.Interfaces;
 using MikaProtocol;
 using MikaProtocol.Interfaces;
 
-namespace MikaServerCore.Network
+namespace MikaNetwork.Client
 {
     public sealed class MikaClient
     {

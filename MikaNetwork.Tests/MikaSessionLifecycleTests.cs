@@ -1,6 +1,6 @@
 using System.Net;
 using System.Net.Sockets;
-using MikaServerCore.Network;
+using MikaNetwork.Client;
 using Shouldly;
 
 namespace MikaServerCore.test;

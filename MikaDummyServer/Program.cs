@@ -1,6 +1,5 @@
 using MikaDummyServer.Network;
 using MikaProtocol;
-using MikaServerCore.Network;
 
 namespace MikaDummyServer
 {

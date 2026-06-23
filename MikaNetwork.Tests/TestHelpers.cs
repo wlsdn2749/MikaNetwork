@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using System.Net;
-using MikaServerCore.Network;
+using MikaNetwork.Server;
 
 namespace MikaServerCore.test;
 

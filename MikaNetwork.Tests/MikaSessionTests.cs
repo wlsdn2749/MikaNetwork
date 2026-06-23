@@ -1,5 +1,6 @@
 using System.Net;
-using MikaServerCore.Network;
+using MikaNetwork.Client;
+using MikaNetwork.Server;
 using Shouldly;
 
 namespace MikaServerCore.test;

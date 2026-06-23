@@ -1,6 +1,7 @@
 using System.Net;
 using MemoryPack;
-using MikaServerCore.Network;
+using MikaNetwork.Client;
+using MikaNetwork.Core.Network;
 using Shouldly;
 
 namespace MikaServerCore.test;

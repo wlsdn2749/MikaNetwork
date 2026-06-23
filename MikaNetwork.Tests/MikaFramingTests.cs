@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
-using MikaServerCore.Network;
+using MikaNetwork.Core.Network;
 using Shouldly;
 
 namespace MikaServerCore.test;
