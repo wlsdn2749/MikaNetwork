@@ -4,7 +4,9 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <IsPackable>false</IsPackable>
         <Nullable>enable</Nullable>
-        <LangVersion>default</LangVersion>
+        <!-- Unity가 쓰는 Roslyn 언어 버전과 맞춘다. C# 10 문법(record struct 등)이
+             섞여 들어가면 Unity에서 제너레이터가 동작하지 않으므로 9로 고정한다. -->
+        <LangVersion>9</LangVersion>
 
         <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
         <IsRoslynComponent>true</IsRoslynComponent>

@@ -51,7 +51,39 @@ namespace MikaSourceGen
             spc.AddSource("GeneratedHandlers.g.cs", sb.ToString());
         }
 
-        // 증분 캐시를 위한 값 동등성 (record)
-        private readonly record struct HandlerInfo(string PacketType, string IdRef, string MethodRef);
+        // 증분 캐시를 위한 값 동등성. C# 9(Unity)에서도 쓰려고 record struct 대신
+        // readonly struct + IEquatable<T>를 직접 구현한다.
+        private readonly struct HandlerInfo : System.IEquatable<HandlerInfo>
+        {
+            public readonly string PacketType;
+            public readonly string IdRef;
+            public readonly string MethodRef;
+
+            public HandlerInfo(string PacketType, string IdRef, string MethodRef)
+            {
+                this.PacketType = PacketType;
+                this.IdRef = IdRef;
+                this.MethodRef = MethodRef;
+            }
+
+            public bool Equals(HandlerInfo other) =>
+                PacketType == other.PacketType &&
+                IdRef == other.IdRef &&
+                MethodRef == other.MethodRef;
+
+            public override bool Equals(object? obj) => obj is HandlerInfo other && Equals(other);
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    int hash = 17;
+                    hash = hash * 31 + (PacketType?.GetHashCode() ?? 0);
+                    hash = hash * 31 + (IdRef?.GetHashCode() ?? 0);
+                    hash = hash * 31 + (MethodRef?.GetHashCode() ?? 0);
+                    return hash;
+                }
+            }
+        }
     }
 }

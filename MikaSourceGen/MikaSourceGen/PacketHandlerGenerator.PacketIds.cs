@@ -54,7 +54,35 @@ namespace MikaSourceGen
             spc.AddSource("GeneratedPacketIds.g.cs", sb.ToString());
         }
 
-        // 증분 캐시를 위한 값 동등성 (record)
-        private readonly record struct PacketIdInfo(string PacketType, string IdRef);
+        // 증분 캐시를 위한 값 동등성. C# 9(Unity)에서도 쓰려고 record struct 대신
+        // readonly struct + IEquatable<T>를 직접 구현한다.
+        private readonly struct PacketIdInfo : System.IEquatable<PacketIdInfo>
+        {
+            public readonly string PacketType;
+            public readonly string IdRef;
+
+            public PacketIdInfo(string PacketType, string IdRef)
+            {
+                this.PacketType = PacketType;
+                this.IdRef = IdRef;
+            }
+
+            public bool Equals(PacketIdInfo other) =>
+                PacketType == other.PacketType &&
+                IdRef == other.IdRef;
+
+            public override bool Equals(object? obj) => obj is PacketIdInfo other && Equals(other);
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    int hash = 17;
+                    hash = hash * 31 + (PacketType?.GetHashCode() ?? 0);
+                    hash = hash * 31 + (IdRef?.GetHashCode() ?? 0);
+                    return hash;
+                }
+            }
+        }
     }
 }
