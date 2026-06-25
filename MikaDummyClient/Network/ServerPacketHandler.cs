@@ -17,6 +17,12 @@ namespace MikaDummyClient
         {
             
         }
+        
+        [PacketHandler]
+        public static void Handle_S_LoginResponse(ISession session, S_LoginResponse req)
+        {
+            
+        }
     }
 }
 

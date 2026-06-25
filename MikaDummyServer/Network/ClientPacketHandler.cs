@@ -1,6 +1,7 @@
 using MikaNetwork.Core.Interfaces;
 using MikaProtocol;
 using MikaNetwork.Core.Network;
+using MikaDummyServer.User;
 
 namespace MikaDummyServer.Network;
 
@@ -19,5 +20,14 @@ public static class ClientPacketHandler
     public static void Handle_C_PingRequest(ISession session, C_PingRequest req)
     {
         
+    }
+    
+    [PacketHandler]
+    public static void Handle_C_LoginRequest(ISession session, C_LoginRequest req)
+    {
+        var user = UserManager.Instance.CreateUser(session, req.Id);
+        Console.WriteLine($"[Server] Login: Id={req.Id}, Session={session.SessionId}, Success={user != null}");
+
+        session.SendPacket(new S_LoginResponse { Success = user != null, SessionId = session.SessionId });
     }
 }

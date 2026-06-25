@@ -10,6 +10,10 @@ public class MikaServer : IDisposable
     public SessionManager SessionManager { get; init; } = new();
 
     public event Func<ISession, ReadOnlyMemory<byte>, ValueTask>? PacketReceived;
+
+    /// <summary>세션 접속 해제 시 게임 로직 레이어가 정리(User 제거 등)할 수 있도록 노출.</summary>
+    public event Action<ISession>? Disconnected;
+
     public EndPoint EndPoint => _acceptor.EndPoint;
     
     public MikaServer(int port)
@@ -81,11 +85,14 @@ public class MikaServer : IDisposable
 
         SessionManager.TryRemove(session.SessionId, out _);
 
+        // 게임 로직 레이어가 User 등 세션 연관 상태를 정리하도록 알림
+        Disconnected?.Invoke(session);
+
         Console.WriteLine($"[{session.SessionId}] Disconnected");
     }
 
     private async ValueTask OnSessionPacketReceived(ISession session, ReadOnlyMemory<byte> data)
-    {
+    { 
         var handler = PacketReceived;
         if (handler != null)
         {
