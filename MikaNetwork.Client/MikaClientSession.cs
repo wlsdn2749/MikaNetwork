@@ -101,43 +101,51 @@ namespace MikaNetwork.Client
 
         private async Task ReceiveLoop()
         {
-            while (IsConnected)
+            try
             {
-                // 여기서 recvBuffer에 직접쓸 공간 가져오기 새 할당 XX
-                var buffer =_recvBuffer.GetWritableMemory(RecvChunkSize);
-                int received = await _socket.ReceiveAsync(buffer, SocketFlags.None);
-                
-                if (received == 0)
+                while (IsConnected)
                 {
-                    break; 
-                }
-                
-                _recvBuffer.AdvanceWrite(received);
-                while (_recvBuffer.ReadableBytes >= MikaPacketBuilder.HeaderSize) // PacketHeader
-                {
-                    var size = MikaPacketBuilder.ReadSize(_recvBuffer.GetReadableSpan());
-                    
-                    // 읽은 사이즈가 Header보다 작거나, 패킷 사이즈보다 클 경우 차단
-                    if (size < MikaPacketBuilder.HeaderSize || size > MikaPacketBuilder.MaxPacketSize)
-                    {
-                        Disconnect();
-                        return;
-                    }
-                    
-                    if (size <= _recvBuffer.ReadableBytes)
-                    {
-                        var data = MikaPacketBuilder.ReadPacket(_recvBuffer.GetReadableSpan(), size);
-                        _recvBuffer.AdvanceRead(size);
-                        await OnReceived(data);
-                    }
-                    else
+                    // 여기서 recvBuffer에 직접쓸 공간 가져오기 새 할당 XX
+                    var buffer =_recvBuffer.GetWritableMemory(RecvChunkSize);
+                    int received = await _socket.ReceiveAsync(buffer, SocketFlags.None);
+
+                    if (received == 0)
                     {
                         break;
                     }
+
+                    _recvBuffer.AdvanceWrite(received);
+                    while (_recvBuffer.ReadableBytes >= MikaPacketBuilder.HeaderSize) // PacketHeader
+                    {
+                        var size = MikaPacketBuilder.ReadSize(_recvBuffer.GetReadableSpan());
+
+                        // 읽은 사이즈가 Header보다 작거나, 패킷 사이즈보다 클 경우 차단
+                        if (size < MikaPacketBuilder.HeaderSize || size > MikaPacketBuilder.MaxPacketSize)
+                        {
+                            return;
+                        }
+
+                        if (size <= _recvBuffer.ReadableBytes)
+                        {
+                            var data = MikaPacketBuilder.ReadPacket(_recvBuffer.GetReadableSpan(), size);
+                            _recvBuffer.AdvanceRead(size);
+                            await OnReceived(data);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
                 }
             }
-            
-            Disconnect();
+            catch (Exception)
+            {
+                // 강제 종료(RST)·소켓 오류 등 → finally에서 Disconnect 처리
+            }
+            finally
+            {
+                Disconnect();
+            }
         }
 
         private async Task SendLoop()

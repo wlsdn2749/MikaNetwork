@@ -77,8 +77,11 @@ public class MikaServer : IDisposable
     private void OnDisconnected(ISession session)
     {
         session.Received -= OnSessionPacketReceived;
-        
+        session.Disconnected -= OnDisconnected;
+
         SessionManager.TryRemove(session.SessionId, out _);
+
+        Console.WriteLine($"[{session.SessionId}] Disconnected");
     }
 
     private async ValueTask OnSessionPacketReceived(ISession session, ReadOnlyMemory<byte> data)

@@ -52,7 +52,7 @@ namespace MikaNetwork.Client
 
         private void OnDisconnected(ISession session)
         {
-            Console.WriteLine($"$Disconnected from {session.RemoteEndPoint}");
+            Console.WriteLine($"Disconnected from {session.RemoteEndPoint}");
         }
 
     }
