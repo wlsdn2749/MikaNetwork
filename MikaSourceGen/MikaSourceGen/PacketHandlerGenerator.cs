@@ -34,9 +34,17 @@ namespace MikaSourceGen
                 .Select(static (p, _) => p!.Value)
                 .Collect();
 
+            // 참조 어셈블리(MikaProtocol 등)까지 포함한 전체 [Packet] 타입명.
+            // 핸들러 생성 프로젝트(서버/클라)에서는 패킷 정의가 syntax로 안 보이므로 심볼로 스캔한다.
+            var allPackets = context.CompilationProvider
+                .Select(static (c, _) => GetAllPacketTypeNames(c));
+
             // 서로 다른 소스로 구동 -> 각 파일이 알맞은 프로젝트에서 독립적으로 생성·캐싱된다.
             context.RegisterSourceOutput(handlers, EmitHandlers);
             context.RegisterSourceOutput(packetIds, EmitPacketIds);
+
+            // 빠뜨린 핸들러를 빌드 경고(MIKA001)로 드러낸다. 등록 로직과 독립.
+            context.RegisterSourceOutput(handlers.Combine(allPackets), ReportMissingHandlers);
         }
 
         // enum 상수(TypedConstant) -> "MikaProtocol.PacketId.C_EchoRequest" 같은 참조 문자열

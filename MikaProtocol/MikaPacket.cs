@@ -32,7 +32,9 @@ namespace MikaProtocol
     {
         None = 0,
         C_EchoRequest = 1,
-        S_EchoResponse = 2
+        S_EchoResponse = 2,
+        C_PingRequest = 3,
+        S_PongResponse = 4
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -45,6 +47,18 @@ namespace MikaProtocol
     public partial class S_EchoResponse : IPacket
     {
         public string Message { get; set; } = "";
+    }
+
+    [MemoryPackable, Packet(PacketId.C_PingRequest)]
+    public partial class C_PingRequest : IPacket
+    {
+        
+    }
+    
+    [MemoryPackable, Packet(PacketId.S_PongResponse)]
+    public partial class S_PongRequest : IPacket
+    {
+        
     }
     
     

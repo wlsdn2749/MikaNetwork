@@ -36,14 +36,19 @@ namespace MikaNetwork.Core.Network
                 var job = handler(session, body);
                 if (onRecvCallback != null)
                 {
-                    onRecvCallback.Invoke(job); // 실행을 다른 스레드로 이양 
+                    onRecvCallback.Invoke(job); // 실행을 다른 스레드로 이양
                 }
                 else
                 {
                     job.Invoke(); // NetworkThread에서 직접 실행
                 }
             }
-            
+            else
+            {
+                // 등록 안 된 id(핸들러 누락·버전 불일치·알 수 없는 패킷) -> silent drop 대신 로그
+                Console.WriteLine($"[MikaPacketManager] 미처리 패킷 수신: id={id}");
+            }
+
 
         }
     }

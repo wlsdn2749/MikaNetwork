@@ -11,6 +11,12 @@ namespace MikaDummyClient
         {
             Console.WriteLine($"[Client] Recv Echo: {res.Message}");
         }
+
+        [PacketHandler]
+        public static void Handle_S_PongRequest(ISession session, S_PongRequest req)
+        {
+            
+        }
     }
 }
 
