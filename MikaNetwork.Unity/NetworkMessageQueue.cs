@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using Utils;
 
 public class NetworkMessageQueue : Singleton<NetworkMessageQueue>
 {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace MikaUtils
 {
@@ -8,4 +8,3 @@ namespace MikaUtils
         public static T Instance => _instance.Value;
     }    
 }
-

@@ -1,8 +1,5 @@
 using System;
-using MikaProtocol.Interfaces;
 using MemoryPack;
-
-
 
 /// <summary>
 /// 1. 패킷은 반드시 ushort인 id, size를 포함해야 함.
@@ -12,7 +9,7 @@ using MemoryPack;
 /// </summary>
 ///
 
-namespace MikaProtocol
+namespace MikaNetwork
 {
     [AttributeUsage(AttributeTargets.Class)]
     public sealed class PacketAttribute : Attribute
@@ -32,11 +29,7 @@ namespace MikaProtocol
     {
         None = 0,
         C_EchoRequest = 1,
-        S_EchoResponse = 2,
-        C_PingRequest = 3,
-        S_PongResponse = 4,
-        C_LoginRequest = 5,
-        S_LoginResponse = 6
+        S_EchoResponse = 2
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -50,31 +43,6 @@ namespace MikaProtocol
     {
         public string Message { get; set; } = "";
     }
-
-    [MemoryPackable, Packet(PacketId.C_PingRequest)]
-    public partial class C_PingRequest : IPacket
-    {
-        
-    }
     
-    [MemoryPackable, Packet(PacketId.S_PongResponse)]
-    public partial class S_PongRequest : IPacket
-    {
-
-    }
-
-    [MemoryPackable, Packet(PacketId.C_LoginRequest)]
-    public partial class C_LoginRequest : IPacket
-    {
-        public string Id { get; set; } = "";
-    }
-
-    [MemoryPackable, Packet(PacketId.S_LoginResponse)]
-    public partial class S_LoginResponse : IPacket
-    {
-        public bool Success { get; set; }
-        public long SessionId { get; set; }
-    }
-
-
+    
 }

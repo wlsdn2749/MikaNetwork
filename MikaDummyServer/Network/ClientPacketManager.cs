@@ -1,4 +1,4 @@
-using MikaNetwork.Core.Network;
+using MikaNetwork;
 
 namespace MikaDummyServer.Network;
 

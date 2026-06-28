@@ -10,9 +10,6 @@
 
         <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
         <IsRoslynComponent>true</IsRoslynComponent>
-
-        <!-- 단일 내부 규칙(MIKA001)이라 analyzer release tracking 파일은 두지 않는다 -->
-        <NoWarn>$(NoWarn);RS2008</NoWarn>
         
         <RootNamespace>MikaSourceGen</RootNamespace>
         <PackageId>MikaSourceGen</PackageId>

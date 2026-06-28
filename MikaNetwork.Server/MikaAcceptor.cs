@@ -1,8 +1,7 @@
 using System.Net;
 using System.Net.Sockets;
-using MikaNetwork.Core.Network;
 
-namespace MikaNetwork.Server;
+namespace MikaNetwork;
 
 public class MikaAcceptor : IDisposable
 {

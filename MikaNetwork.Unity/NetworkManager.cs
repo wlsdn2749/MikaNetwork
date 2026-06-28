@@ -1,37 +1,47 @@
 #if UNITY_5_3_OR_NEWER
 
-public class NetworkManager : SingletonMonobehavior<NetworkManager>
+using System;
+using UnityEngine;
+using Utils;
+
+namespace MikaNetwork
 {
-    private readonly MikaClient _client = new();
-    private readonly ServerPacketManager _packetManager = new();
-
-    void Awake()
+    public class NetworkManager : SingletonMonoBehaviour<NetworkManager>
     {
-    }
+        private readonly MikaClient _client = new();
+        private readonly ServerPacketManager _packetManager = new();
 
-    public async void Start()
-    {  
-        _client.PacketReceived += (session, data) =>
+        protected override void Awake()
         {
-            _packetManager.OnRecvPacket(session, data, job =>
-            {
-                NetworkMessageQueue.Instance.Push(job);
-            });
-            
-            return default;
+            base.Awake(); // Singleton 등록
+
+            Debug.Log("NetworkManager is Awaken");
         }
 
-        await _client.ConnectAsync("127.0.0.1", 10010);
-    }
+        public async void Start()
+        {
+            _client.PacketReceived += (session, data) =>
+            {
+                _packetManager.OnRecvPacket(session, data, job =>
+                {
+                    NetworkMessageQueue.Instance.Push(job);
+                });
 
-    void Update()
-    {
-        NetworkMessageQueue.Instance.Flush(); 
-    }
+                return default;
+            };
 
-    public void Send<T>(T packet) where T : IPacket
-    {
-        _client.Send(packet);
+            await _client.ConnectAsync("127.0.0.1", 10010);
+        }
+
+        void Update()
+        {
+            NetworkMessageQueue.Instance.Flush();
+        }
+
+        public void Send<T>(T packet) where T : IPacket
+        {
+            _client.Send(packet);
+        }
     }
 }
 

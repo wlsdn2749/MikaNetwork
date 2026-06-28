@@ -1,11 +1,8 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using MikaNetwork.Core.Interfaces;
-using MikaProtocol;
-using MikaProtocol.Interfaces;
 
-namespace MikaNetwork.Client
+namespace MikaNetwork
 {
     public sealed class MikaClient
     {
@@ -43,8 +40,7 @@ namespace MikaNetwork.Client
                 await handler(session, data);
             }
         }
-
-
+        
         private void OnConnected(ISession session)
         {
             Console.WriteLine($"Connected to {session.RemoteEndPoint}");
@@ -52,7 +48,7 @@ namespace MikaNetwork.Client
 
         private void OnDisconnected(ISession session)
         {
-            Console.WriteLine($"Disconnected from {session.RemoteEndPoint}");
+            Console.WriteLine($"$Disconnected from {session.RemoteEndPoint}");
         }
 
     }

@@ -1,7 +1,5 @@
 using System.Threading.Tasks;
-using MikaProtocol;
-using MikaProtocol.Interfaces;
-using MikaNetwork.Client;
+using MikaNetwork;
 using MikaUtils;
 
 namespace MikaDummyClient

@@ -17,8 +17,4 @@
       <ProjectReference Include="..\MikaUtils\MikaUtils.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="User\" />
-    </ItemGroup>
-
 </Project>

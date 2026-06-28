@@ -1,8 +1,7 @@
-using MikaNetwork;
+#if UNITY_5_3_OR_NEWER
 
-namespace MikaDummyClient
+namespace MikaNetwork
 {
-
     public class ServerPacketManager : MikaPacketManager
     {
         public ServerPacketManager()
@@ -11,3 +10,5 @@ namespace MikaDummyClient
         }
     }
 }
+
+#endif

@@ -1,7 +1,8 @@
-using System;
-using MikaNetwork;
+#if UNITY_5_3_OR_NEWER
 
-namespace MikaDummyClient
+using System;
+
+namespace MikaNetwork
 {
     public static class ServerPacketHandler
     {
@@ -13,3 +14,4 @@ namespace MikaDummyClient
     }
 }
 
+#endif

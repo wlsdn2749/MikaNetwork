@@ -3,7 +3,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-namespace MikaNetwork.Client
+
+namespace MikaNetwork
 {
     public class MikaConnector : IDisposable
     {

@@ -1,8 +1,7 @@
 using System.Collections.Concurrent;
 using System.Net.Sockets;
-using MikaNetwork.Server;
 
-namespace MikaNetwork.Server;
+namespace MikaNetwork;
 
 public static class MikaSessionFactory
 {
